@@ -1,0 +1,11 @@
+# Setup values. Lines marked ASSUMED were filled in without being confirmed; change them freely.
+agency_name: "Ruchi's Digital Marketing"
+principal: ""                 # TO FILL: the human who approves all spend
+default_currency: INR         # ASSUMED
+default_market: India         # ASSUMED
+runtime: claude-code          # ASSUMED: see ARCHITECTURE.md for why
+approval_channel: terminal    # Phase 1. Chat, email or Slack approval is a later step
+hosting: local                # ASSUMED: for the data stack and dashboard
+mode: dry_run                 # dry_run | live. Live adapters are not built yet
+pacing_tolerance_pct: 10      # ASSUMED: deviation from plan that triggers an alert
+reconciliation_tolerance_pct: 2   # ASSUMED: platform vs warehouse spend

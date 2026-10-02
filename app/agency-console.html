@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ruchi's Digital Marketing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2F3F8; --surface:#FFFFFF; --ink:#1B2040; --muted:#5B6180; --line:#D8DBE8; --tint:#E8EAF4;
+  --accent:#E2A300; --accent-soft:#FBF1D2; --go:#17735F; --go-soft:#DDF1EB; --stop:#B4372C; --stop-soft:#F8E1DE; --focus:#3D4BD8;
+  --display:"Familjen Grotesk","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Public Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#13162A; --surface:#1C2040; --ink:#ECEEF8; --muted:#A4AAC8; --line:#343A64; --tint:#262B52;
+    --accent:#F0B429; --accent-soft:#3D3312; --go:#4CC3A5; --go-soft:#173A33; --stop:#F08A7E; --stop-soft:#43201D; --focus:#9AA5FF;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#13162A; --surface:#1C2040; --ink:#ECEEF8; --muted:#A4AAC8; --line:#343A64; --tint:#262B52;
+  --accent:#F0B429; --accent-soft:#3D3312; --go:#4CC3A5; --go-soft:#173A33; --stop:#F08A7E; --stop-soft:#43201D; --focus:#9AA5FF;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 1rem/1.5 var(--body);-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;line-height:1.15;margin:0}
+h1{font-size:1.6rem;letter-spacing:-.01em}
+h2{font-size:1.3rem;margin-bottom:.6rem}
+h3{font-size:1.08rem}
+h4{font-size:1rem;margin:1rem 0 .3rem}
+p{margin:.4rem 0}
+.wrap{max-width:60rem;margin:0 auto;padding:0 1rem}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+
+.top{padding:1.1rem 0 .8rem}
+.top-row{display:flex;gap:.75rem;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
+.dry{font-size:.875rem;background:var(--accent-soft);border:1px solid var(--accent);border-radius:999px;padding:.15rem .7rem}
+.steps{list-style:none;display:flex;gap:0;margin:.9rem 0 0;padding:0;overflow-x:auto;counter-reset:s}
+.steps li{counter-increment:s;flex:1 0 auto;font-size:.8125rem;color:var(--muted);padding:.35rem .9rem .35rem 0;border-top:3px solid var(--line);margin-right:3px;white-space:nowrap}
+.steps li::before{content:counter(s) ". "}
+.steps li.done{border-top-color:var(--go);color:var(--ink)}
+.steps li.now{border-top-color:var(--accent);color:var(--ink);font-weight:600}
+
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line)}
+.tabs .wrap{display:flex;gap:.25rem;overflow-x:auto}
+.tab{font:600 .9375rem var(--body);color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:.7rem .7rem .55rem;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.badge{display:inline-block;min-width:1.3rem;text-align:center;background:var(--accent);color:#2A1E00;border-radius:999px;font-size:.75rem;padding:0 .35rem;margin-left:.3rem}
+main{padding:1.2rem 0 4rem}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1rem;margin:0 0 .9rem}
+.panel > h3{margin-bottom:.35rem}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.spread{justify-content:space-between}
+.status{font-size:.8125rem;border-radius:999px;padding:.05rem .6rem;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.status.done,.status.approved,.status.live{background:var(--go-soft);border-color:var(--go);color:var(--ink)}
+.status.working,.status.pending{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.status.failed,.status.rejected,.status.blocked{background:var(--stop-soft);border-color:var(--stop);color:var(--ink)}
+.out{white-space:pre-wrap;overflow-wrap:anywhere}
+.rich ul{margin:.2rem 0 .5rem;padding-left:1.15rem}
+.rich li{margin:.15rem 0}
+.rich{max-width:44rem}
+
+.btn{font:600 .9375rem var(--body);border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:.55rem .95rem;cursor:pointer}
+.btn.quiet{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.go{background:var(--go);border-color:var(--go);color:#fff}
+:root[data-theme="dark"] .btn.go{color:#06231D}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.go{color:#06231D}}
+.btn.stop{background:transparent;border-color:var(--stop);color:var(--stop)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.tab:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+label{display:block;font-weight:600;font-size:.9375rem;margin:.7rem 0 .2rem}
+input,textarea,select{width:100%;font:400 1rem var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.55rem .65rem}
+textarea{min-height:5.5rem;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr;gap:0 .9rem}
+@media (min-width:40rem){.grid2{grid-template-columns:1fr 1fr}}
+.hint{font-size:.8125rem;color:var(--muted);margin:.15rem 0 0}
+
+.notice{border-left:4px solid var(--accent);background:var(--accent-soft);padding:.6rem .8rem;border-radius:0 8px 8px 0;margin:0 0 .9rem}
+.notice.bad{border-left-color:var(--stop);background:var(--stop-soft)}
+.notice.good{border-left-color:var(--go);background:var(--go-soft)}
+
+/* the approval slip: the one loud element */
+.slip{position:relative;background:var(--surface);border:1px solid var(--line);border-left:12px solid var(--accent);border-radius:4px 14px 14px 4px;padding:1rem 1rem 1rem 1.1rem;margin:0 0 1rem;
+  background-image:radial-gradient(circle at 0 50%, var(--paper) 6px, transparent 6.5px);background-size:13px 22px;background-repeat:repeat-y;background-position:right -7px top}
+.slip-head{display:flex;justify-content:space-between;gap:.6rem;align-items:baseline;flex-wrap:wrap}
+.slip-amount{font:700 2.1rem/1.05 var(--display);margin:.35rem 0 .1rem;letter-spacing:-.02em}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(7.5rem,1fr));gap:.5rem 1rem;margin:.7rem 0}
+.facts div{font-size:.9375rem}
+.facts span{display:block;font-size:.8125rem;color:var(--muted)}
+.slip-actions{display:flex;gap:.6rem;flex-wrap:wrap;align-items:end;margin-top:.8rem;padding-top:.8rem;border-top:1px dashed var(--line)}
+.slip-actions .field{flex:1 1 9rem;max-width:13rem}
+.slip-actions label{margin:0 0 .2rem;font-size:.8125rem}
+.slip.decided{border-left-color:var(--line);background-image:none;padding-top:.7rem;padding-bottom:.7rem}
+.slip.decided.approved{border-left-color:var(--go)}
+.slip.decided.rejected{border-left-color:var(--stop)}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:.6rem;margin:0 0 .9rem}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.65rem .8rem}
+.tile b{display:block;font:700 1.3rem/1.2 var(--display)}
+.tile span{font-size:.8125rem;color:var(--muted)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9375rem}
+th,td{text-align:right;padding:.45rem .6rem;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;color:var(--muted);font-size:.8125rem}
+svg.chart{width:100%;max-width:40rem;height:auto;display:block}
+details{margin:.4rem 0}
+summary{cursor:pointer;font-weight:600}
+.log{list-style:none;margin:.5rem 0 0;padding:0;font-size:.875rem}
+.log li{padding:.3rem 0;border-bottom:1px solid var(--line)}
+.agent{border-top:1px solid var(--line);padding:.6rem 0}
+.agent:first-of-type{border-top:0}
+.indent{margin-left:1.1rem;padding-left:.9rem;border-left:2px solid var(--tint)}
+.flash{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(1rem + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:.6rem 1rem;border-radius:8px;max-width:calc(100% - 2rem);z-index:9}
+@media (prefers-reduced-motion:no-preference){.status.working{animation:pulse 1.4s ease-in-out infinite}@keyframes pulse{50%{opacity:.55}}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="top-row"><h1>Ruchi's Digital Marketing</h1><span class="dry">Dry run: no real money can move</span></div>
+  <ol class="steps" id="steps" aria-label="Workflow"></ol>
+</div></header>
+<nav class="tabs"><div class="wrap" role="tablist" id="tabs"></div></nav>
+<main><div class="wrap" id="app"></div></main>
+<script>
+(() => {
+'use strict';
+const AGENTS = [{"name": "ceo", "title": "CEO", "boss": null, "dept": "Leadership", "desc": "Makes the final call inside the agency and prepares spend approval requests for you.", "mandate": "Make the final call inside the agent organisation: which strategy and plan go forward and what is recommended to the owner. Own client outcomes. You cannot approve spend; only the owner can.", "playbook": ["Review each department head's work against its quality checklist", "When heads disagree, decide and write down why", "Choose between plan scenarios and state what is given up", "Every number sent to the owner has a source or is labelled an assumption", "Risks and kill criteria must be specific and measurable"], "outputs": ["Decision record", "Spend approval requests", "Three-line status for the owner"]}, {"name": "client-services-director", "title": "Client Services Director", "boss": "ceo", "dept": "Client services", "desc": "Owns brief intake, scope, timeline and client communication. Use first on any new client brief and for client status updates.", "mandate": "Own the client relationship and the brief. Nothing starts without a complete brief, and nothing reaches the client without your review.", "playbook": ["Start from the business outcome the client wants, not their channel wish-list", "Insist on one primary objective and one primary KPI, with a target number and a date", "Pin down what the budget must cover: media only, or also fees, production and tools", "Record mandatories: brand rules, legal constraints, excluded audiences, competitor sensitivities", "Take an inventory of access: ad accounts, analytics, CRM, product feed, historic data", "Restate the brief back in one paragraph and get it confirmed before strategy starts"], "outputs": ["01-brief.md, complete or with every gap listed as a question for the Principal", "Scope and timeline with stage gates (status.md)", "Weekly client status update"]}, {"name": "chief-strategy-officer", "title": "Chief Strategy Officer", "boss": "ceo", "dept": "Strategy", "desc": "Owns audience, proposition, channel roles and the KPI framework. Use after the brief is complete and before media planning.", "mandate": "Turn the client's business problem into a communications strategy: who we need to reach, what we need them to think or do, the job of each channel, and how success will be measured.", "playbook": ["Write the problem as a behaviour to change, with the barrier that currently stops it", "Choose audiences on size, propensity and reachability, and say which you are deliberately not targeting", "Build a KPI tree: business KPI, then campaign KPI, then channel diagnostics. Only one primary KPI", "Give each channel a job (build demand, capture demand, convert, retain) before anyone discusses budget", "Agree with Marketing Science that every KPI in the tree can actually be measured with the access we have", "Keep the strategy to two pages; detail goes in appendices"], "outputs": ["03-strategy.md: business problem, marketing objective, communications objective, audience definition with evidence and size, proposition and message hierarchy, role of each channel across the funnel, KPI tree with targets, hypotheses to test"]}, {"name": "head-of-media-planning", "title": "Head of Media Planning and Investment", "boss": "ceo", "dept": "Media planning and investment", "desc": "Owns channel mix, budget allocation, flighting, forecasts and scenarios. Use once the strategy is signed off, and for any replanning.", "mandate": "Convert the strategy into a media plan in which every unit of budget has an objective, a KPI and a forecast, and the total never exceeds the client ceiling.", "playbook": ["Allocate along response curves and diminishing returns where data exists; otherwise use benchmark ranges and label them as benchmarks", "Respect minimum viable spend per channel so that budget is not spread too thin to learn anything", "Present forecasts as low, base and high, never as a single point", "Account for fees, production and tool costs if the client budget covers them", "Always offer an efficiency-led and a growth-led scenario and explain what each gives up", "Use only open-source planning and modelling tools"], "outputs": ["04-media-plan.md: channel mix with rationale, budget by channel, phase and week, flighting calendar, forecast ranges per channel, at least two scenarios with trade-offs, test budget with hypotheses, assumptions log", "The plan as an open spreadsheet (CSV, Grist or LibreOffice) with traceable formulas"]}, {"name": "head-of-performance", "title": "Head of Performance and Activation", "boss": "ceo", "dept": "Performance and activation", "desc": "Owns campaign build, launch readiness and in-flight optimisation across all paid and owned channels. Use after the plan is approved.", "mandate": "Build what the approved plan describes, get it ready to launch, and optimise it in flight without ever stepping outside what the Principal approved.", "playbook": ["Everything is built paused; only the execution service launches", "One naming convention and one UTM taxonomy, set by Ad Operations, used everywhere", "Budgets, caps and dates in build sheets must equal the approval record exactly", "Give platforms enough time and volume to learn before judging; do not change several things at once", "Review pacing daily and performance weekly; reallocate toward marginal return, not average return"], "outputs": ["05-build/: one build sheet per channel", "Launch-readiness note for QA", "Weekly optimisation log: change, reason, expected effect, review date", "Change requests for anything outside the approved envelope"]}, {"name": "head-of-creative", "title": "Head of Creative and Content", "boss": "ceo", "dept": "Creative and content", "desc": "Owns messaging, creative concepts, asset production and landing experience. Use once the strategy is signed off.", "mandate": "Turn the proposition into creative and landing experiences that fit each placement and can be tested, within brand and legal rules.", "playbook": ["Each asset carries one message for one audience", "Test distinct concepts before testing small variants", "Produce only as many variants as the budget can learn from", "Design for the placement: aspect ratio, safe zones, sound-off viewing", "Meet accessibility basics: captions, contrast, alt text", "Be plain about limits: agents write copy, scripts, storyboards and specs and can drive Inkscape, GIMP, Penpot and FFmpeg; where finished imagery or footage needs a human or another tool, say so"], "outputs": ["Creative brief", "Messaging matrix: audience by funnel stage by message", "Asset list with specs per placement, and the assets or production-ready specs", "Landing page recommendations and creative test plan"]}, {"name": "head-of-marketing-science", "title": "Head of Marketing Science", "boss": "ceo", "dept": "Marketing science", "desc": "Owns measurement design, data, the dashboard, reporting, experiments and attribution. Use for measurement plans, performance questions and all reports.", "mandate": "Make sure every result the agency reports is measured correctly, sourced, and honest about its uncertainty.", "playbook": ["Define each metric once, in the transformation layer; every report uses that definition", "Every number carries its source and a data-as-of time", "Keep platform-reported results separate from incrementally measured results", "No causal claims from correlational data", "Real time means as fresh as each source allows; never present delayed data as live"], "outputs": ["Measurement plan: KPIs, definitions, sources, conversion events, attribution approach, experiment design", "Tracking requirements for Ad Operations", "The live dashboard", "Weekly report and end-of-campaign report"]}, {"name": "head-of-finance-governance", "title": "Head of Finance and Governance", "boss": "ceo", "dept": "Finance and governance", "desc": "Independent control function owning the budget ledger, reconciliation, compliance, brand safety and QA. Use before every spend request and every launch.", "mandate": "Act as the agency's independent control function. You report to the CEO, but the CEO cannot waive a failed QA or compliance check; only the Principal can.", "playbook": ["Reviewers never review work they helped build", "A fail lists each defect and the fix required; there is no pass-with-comments on budget, tracking or legal items", "Reconcile daily: platform spend against committed budgets against approvals", "Read the ledger through the CLI; never edit state files by hand"], "outputs": ["Budget position for every Spend Approval Request", "Daily reconciliation of platform spend against approvals", "Compliance sign-off and 06-qa.md"]}, {"name": "account-manager", "title": "Account Manager", "boss": "client-services-director", "dept": "Client services", "desc": "Drafts the client brief from client materials, chases missing information and writes client status updates.", "mandate": "Capture what the client actually needs and keep a faithful record of what they have said and decided.", "playbook": ["Separate must-haves from preferences", "Write numbers with units, currency and dates", "Log every client decision with its date and who made it", "When the client is vague, offer two concrete interpretations to choose between"], "outputs": ["Draft 01-brief.md", "List of open questions", "Client status updates", "Client decision log"]}, {"name": "project-manager", "title": "Project and Traffic Manager", "boss": "client-services-director", "dept": "Client services", "desc": "Builds and maintains the timeline, dependencies and stage gates for a campaign.", "mandate": "Keep the work moving through the workflow stages and make blockers visible early.", "playbook": ["Plan backwards from the launch date", "Find the critical path; tracking setup and creative approval are the usual blockers", "Every task has one owning agent and one due date", "Check blockers at the start of each working session"], "outputs": ["status.md: tasks, owners, due dates, blockers, stage-gate status"]}, {"name": "audience-insights-analyst", "title": "Audience and Insights Analyst", "boss": "chief-strategy-officer", "dept": "Strategy", "desc": "Defines, sizes and profiles target audiences with cited evidence.", "mandate": "Tell the agency who the audience is, how big it is, and how it behaves, with evidence.", "playbook": ["Segment by need and behaviour, not demographics alone", "Size each segment from a named, dated source: official statistics, platform audience estimates, client data, published research", "Identify the moments and needs that bring people into the category, and what stops them choosing the client", "Rank segments on size, propensity and reachability", "Label each statement as data, published research or hypothesis"], "outputs": ["Audience profiles", "Sizing table with a source for every figure", "Journey map with media habits, triggers and barriers"]}, {"name": "competitive-analyst", "title": "Competitive and Category Analyst", "boss": "chief-strategy-officer", "dept": "Strategy", "desc": "Reviews competitors' positioning, messaging, offers and visible media activity.", "mandate": "Show where competitors are strong, where they are absent, and what the category norms are.", "playbook": ["Compare positioning, offer, price cues and calls to action side by side", "Review live competitor ads through the platforms' public ad libraries", "Use public search-interest data for share of search and seasonality", "Separate what is observed from what is estimated; never present estimated competitor spend as fact"], "outputs": ["Competitive review with links to every example", "Whitespace and risks summary"]}, {"name": "media-planner", "title": "Media Planner", "boss": "head-of-media-planning", "dept": "Media planning and investment", "desc": "Builds the channel plan and flighting calendar from the strategy.", "mandate": "Decide which channels, formats, audiences and weeks the budget goes into, and why.", "playbook": ["Set reach and frequency goals before setting budgets", "Check each platform's minimum viable spend and learning requirements", "Flight against seasonality and the purchase cycle; choose continuous or pulsed deliberately", "Sequence demand-building ahead of conversion pushes", "Reserve a test budget and attach a hypothesis and decision rule to each test", "Build the plan in an open spreadsheet with traceable formulas"], "outputs": ["Channel plan table", "Flighting calendar", "Test plan with hypotheses"]}, {"name": "budget-forecasting-analyst", "title": "Budget and Forecasting Analyst", "boss": "head-of-media-planning", "dept": "Media planning and investment", "desc": "Runs media mix modelling, response curves, budget optimisation and forecasts using open-source tools.", "mandate": "Estimate what each unit of budget is likely to return and find the allocation that best meets the objective.", "playbook": ["With roughly two years or more of weekly history, fit a media mix model (Robyn, Meridian or PyMC-Marketing)", "With less history, build response curves from account data or labelled benchmarks and run scenario simulations", "Optimise allocation under constraints with SciPy or OR-Tools", "Report low, base and high cases; state priors and assumptions", "Back-test where possible and run sensitivity analysis on the two most uncertain inputs", "Verify each tool's licence and maintenance status before adopting it"], "outputs": ["Response curves per channel", "Optimised allocation under constraints", "Forecast ranges with assumptions and diagnostics"]}, {"name": "paid-search-specialist", "title": "Paid Search Specialist", "boss": "head-of-performance", "dept": "Performance and activation", "desc": "Plans, builds and optimises paid search and shopping campaigns.", "mandate": "Capture existing demand efficiently and show clearly what brand and non-brand search each deliver.", "playbook": ["Structure by intent (brand, category, competitor, product) so budgets follow value", "Pair match types with strong negative lists; mine search-term reports weekly", "Report brand and non-brand separately", "Write responsive ads with distinct headline themes and use all relevant assets", "Match the bidding strategy to conversion volume; move to automated targets only when there is enough data", "Use impression share lost to budget versus rank to diagnose where to act", "Keep ad message and landing page aligned; keep the feed clean"], "outputs": ["Search build sheet: campaigns, ad groups, keywords, negatives, ads, assets, bids, budgets, targeting", "Entries in the optimisation log"]}, {"name": "paid-social-specialist", "title": "Paid Social Specialist", "boss": "head-of-performance", "dept": "Performance and activation", "desc": "Plans, builds and optimises paid social campaigns across social platforms.", "mandate": "Create and convert demand on social platforms, with creative as the main lever.", "playbook": ["Choose the campaign objective that matches the KPI event", "Keep the structure simple so learning concentrates", "Layer prospecting, retargeting and retention with exclusions to prevent overlap", "Test concepts first, then variants; watch frequency and creative fatigue", "Use placement-specific assets", "Set up server-side conversion signals with Ad Operations", "Judge results on incrementality where possible, not platform attribution alone"], "outputs": ["Social build sheet: campaigns, ad sets, audiences, exclusions, placements, creatives, budgets", "Entries in the optimisation log"]}, {"name": "programmatic-specialist", "title": "Programmatic, Display and Video Specialist", "boss": "head-of-performance", "dept": "Performance and activation", "desc": "Plans, builds and optimises programmatic display, online video and connected TV.", "mandate": "Deliver reach and attention in brand-safe, viewable inventory at the planned frequency.", "playbook": ["Pick the buying route (open exchange, private deals, guaranteed) by objective", "Set brand safety and suitability controls and site lists before launch", "Hold viewability and invalid-traffic thresholds", "Cap frequency across line items, not only within them", "Buy through authorised sellers and short supply paths", "Lead with contextual targeting where identifiers are weak", "Do not judge upper-funnel activity on last-click CPA"], "outputs": ["Programmatic build sheet: line items, deals, audiences, frequency caps, inclusion and exclusion lists", "Entries in the optimisation log"]}, {"name": "retail-media-specialist", "title": "Marketplace and Retail Media Specialist", "boss": "head-of-performance", "dept": "Performance and activation", "desc": "Plans, builds and optimises advertising on marketplaces and retailer media networks.", "mandate": "Grow sales on marketplaces profitably, looking at total sales and not only ad-attributed sales.", "playbook": ["Confirm retail readiness first: listing content, reviews, stock, pricing", "Structure from sponsored product ads upward; harvest converting terms from automatic to manual campaigns", "Track ad cost against total sales as well as ad-attributed sales", "Defend brand terms; conquest selectively", "Align with promotions; pause ads on out-of-stock items"], "outputs": ["Retail media build sheet", "Retail readiness audit", "Entries in the optimisation log"]}, {"name": "seo-specialist", "title": "SEO Specialist", "boss": "head-of-performance", "dept": "Performance and activation", "desc": "Audits and improves organic search performance: technical, content and authority.", "mandate": "Grow non-brand organic visibility and conversions in a way that lasts.", "playbook": ["Audit crawlability, indexation, page speed and structured data (Lighthouse)", "Map keywords to intent and to one target page each", "Prioritise fixes by impact and effort", "Earn authority through useful content and digital PR; no link schemes", "Measure on non-brand clicks and conversions", "Coordinate with paid search on shared results pages"], "outputs": ["Technical audit with prioritised fixes", "Keyword-to-intent map and content gaps", "Content briefs for the creative team"]}, {"name": "crm-lifecycle-specialist", "title": "Email, CRM and Lifecycle Specialist", "boss": "head-of-performance", "dept": "Performance and activation", "desc": "Plans and builds email, messaging and lifecycle programmes on consented first-party data.", "mandate": "Convert and retain known customers through relevant, consented communication.", "playbook": ["Use only data with valid consent for the purpose", "Map the lifecycle: welcome, nurture, abandonment, post-purchase, win-back", "Segment by recency, frequency and value", "Get deliverability right: authentication, list hygiene, gradual warm-up", "Cap contact frequency", "Measure incrementality with holdout groups", "Use open-source tools such as Mautic or listmonk"], "outputs": ["Lifecycle map and segment definitions", "Message flows and copy briefs", "Test plan with holdouts"]}, {"name": "influencer-affiliate-specialist", "title": "Influencer and Affiliate Specialist", "boss": "head-of-performance", "dept": "Performance and activation", "desc": "Selects and manages creators and affiliate partners, with disclosure and tracking.", "mandate": "Use trusted third-party voices and partners to reach the audience, with every fee approved and every post disclosed.", "playbook": ["Select on audience fit and engagement quality, not follower count", "Vet for fake followers and brand safety history", "Put usage rights, exclusivity and deliverables in writing", "Require disclosure that meets the market's advertising rules", "Treat every fee, gift or commission as a spend-affecting action that needs approval", "For affiliates: set commission and validation rules, check for fraud, de-duplicate against other channels"], "outputs": ["Shortlist with vetting notes", "Creator brief and terms", "Tracking setup: codes and links"]}, {"name": "ad-operations-specialist", "title": "Ad Operations Specialist", "boss": "head-of-performance", "dept": "Performance and activation", "desc": "Owns naming, UTM taxonomy, tagging, conversion tracking and feeds, and is the only agent that submits actions to the execution service.", "mandate": "Make sure everything is tracked correctly before launch, and be the single hand that submits campaign actions to the execution service.", "playbook": ["Define naming and UTM rules once and enforce them everywhere", "Implement tags, pixels and server-side conversions with consent handling required in the market", "Test every conversion event end to end before launch and keep the evidence", "Validate product feeds", "Build campaigns paused from the build sheets", "Submit actions with python -m agency.cli execute, always quoting the approval ID", "A block from the execution service is information for the CEO; never try to work around it"], "outputs": ["Naming convention and UTM taxonomy", "Tracking plan and test evidence", "Execution log of every submitted action and its result"]}, {"name": "copywriter", "title": "Copywriter", "boss": "head-of-creative", "dept": "Creative and content", "desc": "Writes ad copy, headlines, scripts, emails and landing page copy.", "mandate": "Write copy that carries one clear message to one audience in the space the placement allows.", "playbook": ["Lead with the customer's problem or the benefit", "Write variants on distinct angles: benefit, proof, offer, urgency", "Respect character limits exactly", "Match the call to action to the landing page", "Adapt for local language and culture; do not translate literally", "Keep a note of the substantiation for every claim"], "outputs": ["Copy decks per placement with variants", "Scripts for video and audio"]}, {"name": "designer", "title": "Designer", "boss": "head-of-creative", "dept": "Creative and content", "desc": "Produces design specifications and static assets for each placement using open-source tools.", "mandate": "Make the message readable and on-brand in each placement within a second or two on a phone.", "playbook": ["Design to exact specs and safe zones", "Establish a clear visual hierarchy: one focal point, one message, one action", "Apply the brand system consistently", "Check legibility and contrast at small sizes", "State plainly when an asset needs photography, illustration or a human designer"], "outputs": ["Design specifications per placement", "Assets and source files where they can be produced with Inkscape, GIMP or Penpot"]}, {"name": "video-producer", "title": "Video and Motion Producer", "boss": "head-of-creative", "dept": "Creative and content", "desc": "Writes storyboards and shot lists and prepares video cut-downs and formats using FFmpeg.", "mandate": "Plan and prepare video that works in the first seconds, without sound, in each aspect ratio.", "playbook": ["Put the hook and the brand in the opening seconds", "Design for sound-off with captions", "Plan vertical, square and landscape versions and short cut-downs from the start", "Confirm rights for all music and footage", "Use FFmpeg for edits, captions and transcodes", "State plainly when a shoot or a human editor is needed"], "outputs": ["Storyboards and shot lists", "Cut-down and format plan", "Edited or transcoded files where source footage exists"]}, {"name": "cro-specialist", "title": "Landing Page and CRO Specialist", "boss": "head-of-creative", "dept": "Creative and content", "desc": "Audits and improves landing pages and runs conversion experiments.", "mandate": "Raise the share of visitors who complete the primary action.", "playbook": ["Match the page to the ad that leads to it", "One primary action per page", "Fix speed and mobile usability first (Lighthouse)", "Reduce form friction; add proof and reassurance near the action", "Instrument every funnel step", "Fix sample size and duration before a test starts and do not stop early on a promising peek", "Use open-source experimentation tools such as GrowthBook"], "outputs": ["Landing page audit with prioritised fixes", "Experiment plans with hypothesis, metric, sample size and duration"]}, {"name": "data-engineer", "title": "Data Engineer", "boss": "head-of-marketing-science", "dept": "Marketing science", "desc": "Builds and maintains ingestion, warehouse, transformations and data tests.", "mandate": "Deliver complete, fresh, tested data to one warehouse so that every report agrees.", "playbook": ["Layer the data: raw, staging, marts", "Re-pull a trailing window on each load because platforms restate conversions", "Test freshness, uniqueness, nulls and spend reconciliation against platform totals", "Record a data-as-of time for every source", "Keep secrets out of the repository", "Hold read-only credentials only; write credentials belong to the execution service alone"], "outputs": ["Ingestion pipelines (dlt or Meltano)", "Warehouse schemas (PostgreSQL, DuckDB or ClickHouse)", "dbt Core models and tests", "Orchestration schedule"]}, {"name": "performance-analyst", "title": "Performance Analyst", "boss": "head-of-marketing-science", "dept": "Marketing science", "desc": "Monitors pacing and anomalies daily and writes the weekly performance report.", "mandate": "Explain what happened, why, and what should be done next.", "playbook": ["Compare spend and KPIs with plan every day", "Decompose KPI changes into volume, rate and cost", "Check sample size and significance before naming a winner", "Compare like-for-like periods", "Separate tracking artefacts from real change", "Lead with the conclusion, then the evidence"], "outputs": ["Daily pacing and anomaly note", "Weekly report: what happened, why, what next"]}, {"name": "attribution-analyst", "title": "Attribution and Incrementality Analyst", "boss": "head-of-marketing-science", "dept": "Marketing science", "desc": "Designs and runs incrementality tests, attribution analysis and media mix modelling.", "mandate": "Estimate what the marketing actually caused, and be clear about what each method cannot see.", "playbook": ["Pick the method by the question: media mix modelling for cross-channel allocation, geo experiments (GeoLift) or CausalImpact for a channel's incrementality, holdouts where platforms allow", "Use path-based attribution (ChannelAttribution) for journey insight, knowing it is correlational and blind to untracked touchpoints", "Pre-register the hypothesis, metric and duration", "Report intervals, not only point estimates", "State what the method cannot see"], "outputs": ["Experiment designs and readouts with intervals", "Attribution analysis", "Reconciliation of platform, analytics and CRM conversions"]}, {"name": "dashboard-developer", "title": "Dashboard Developer", "boss": "head-of-marketing-science", "dept": "Marketing science", "desc": "Builds and maintains the live dashboard on open-source BI tools.", "mandate": "Give the Principal and the team one place to see budget, pacing and performance, as fresh as each source allows.", "playbook": ["Build the views: executive overview, channel and campaign, funnel, approvals, alerts", "Show a data-as-of time on every tile", "Use only metric definitions from the transformation layer", "Check dashboard totals against the ledger and platform totals before release", "Separate client-facing and internal access", "Label synthetic data as synthetic in dry runs"], "outputs": ["Dashboard (Apache Superset, Metabase open-source edition or Grafana)", "Alert rules"]}, {"name": "adhoc-reporting-analyst", "title": "Ad Hoc Reporting Analyst", "boss": "head-of-marketing-science", "dept": "Marketing science", "desc": "Answers one-off data questions and produces on-request reports from the warehouse.", "mandate": "Answer the question that was asked, quickly, with numbers that can be traced and rerun.", "playbook": ["Restate the question and the metric definition before answering", "Query the marts only, never raw tables", "State period, filters and source", "Add caveats on sample size, attribution and restated data", "If the data does not exist, say so and say what would be needed"], "outputs": ["The answer, then the evidence: numbers, chart where useful, definitions, period, source, data-as-of, caveats", "Saved query under reports/queries/", "Export as PDF, spreadsheet or slides on request"]}, {"name": "budget-controller", "title": "Budget Controller", "boss": "head-of-finance-governance", "dept": "Finance and governance", "desc": "Maintains the budget ledger, produces the budget position for spend requests and reconciles spend.", "mandate": "Know at all times how much is approved, committed, spent and left, and prove it.", "playbook": ["Recompute the position from the ledger every time", "Reconcile platform-reported spend against committed budgets and approvals daily", "Include fees and tool costs when the client budget covers them", "Use dated exchange rates for any conversion", "Never edit state files by hand"], "outputs": ["Budget position for each Spend Approval Request", "Daily reconciliation note", "Recorded spend via python -m agency.cli record-spend"]}, {"name": "compliance-reviewer", "title": "Compliance and Brand Safety Reviewer", "boss": "head-of-finance-governance", "dept": "Finance and governance", "desc": "Reviews creative, targeting and data use against advertising standards, platform policies, sector rules and data protection law. Read-only.", "mandate": "Catch legal, policy and brand safety problems before anything goes live.", "playbook": ["Check against the market's advertising standards, each platform's ad policies, sector rules (finance, health, alcohol, gambling, children) and data protection law", "Check consent for every data source used in targeting", "Check disclosure in influencer content", "Check that claims have substantiation on file", "Check brand safety settings", "You are not a lawyer: where a rule is unclear, flag the item for human legal review instead of guessing"], "outputs": ["Compliance review: pass or fail per item, the rule it was checked against, and the fix required"]}, {"name": "qa-reviewer", "title": "QA Reviewer", "boss": "head-of-finance-governance", "dept": "Finance and governance", "desc": "Independent pre-launch check of builds against the approval record, plan and tracking plan.", "mandate": "Independently confirm that what is about to launch is exactly what was approved and that it will be measured.", "playbook": ["Budgets, daily caps and dates equal the approval record", "Targeting, geography, language and exclusions match the plan", "Links resolve and UTMs follow the taxonomy", "Conversion events have test evidence", "Creative meets specs and has compliance sign-off", "Frequency caps and brand safety lists in place", "Campaign status is paused", "Kill criteria exist as alerts"], "outputs": ["06-qa.md: pass or fail, with each defect listed"]}];
+const byName = Object.fromEntries(AGENTS.map(a => [a.name, a]));
+
+/* ---------- helpers ---------- */
+const h = (tag, props, ...kids) => {
+  const n = document.createElement(tag);
+  if (props) for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else if (k === 'value') n.value = v;
+    else n.setAttribute(k, v === true ? '' : v);
+  }
+  for (const kid of kids.flat(3)) if (kid != null && kid !== false) n.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  return n;
+};
+const sum = a => a.reduce((x, y) => x + y, 0);
+const num = v => { const n = typeof v === 'string' ? parseFloat(v.replace(/[, ]/g, '')) : Number(v); return Number.isFinite(n) ? n : 0; };
+const r2 = n => Math.round(n * 100) / 100;
+const clip = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n) + ' […]' : s; };
+const money = n => { try { return new Intl.NumberFormat(undefined, {style: 'currency', currency: (S.brief && S.brief.currency) || 'INR', maximumFractionDigits: 0}).format(n); } catch (e) { return ((S.brief && S.brief.currency) || '') + ' ' + Math.round(n).toLocaleString(); } };
+const int = n => Math.round(n).toLocaleString();
+const iso = d => d.toISOString().slice(0, 10);
+const addDays = (s, n) => { const d = new Date(s + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return iso(d); };
+const flightDays = () => S.brief ? Math.max(1, Math.round((new Date(S.brief.end) - new Date(S.brief.start)) / 864e5) + 1) : 0;
+function rnd(seed) { let x = 1779033703 ^ seed.length; for (let i = 0; i < seed.length; i++) { x = Math.imul(x ^ seed.charCodeAt(i), 3432918353); x = x << 13 | x >>> 19; } return () => { x = Math.imul(x ^ (x >>> 16), 2246822507); x = Math.imul(x ^ (x >>> 13), 3266489909); return ((x ^= x >>> 16) >>> 0) / 4294967296; }; }
+function rich(text) {
+  const box = h('div', {class: 'rich'}); let ul = null;
+  const inline = s => s.split(/(\*\*[^*]+\*\*)/).map(p => /^\*\*[^*]+\*\*$/.test(p) ? h('strong', {text: p.slice(2, -2)}) : p);
+  for (const raw of String(text || '').split('\n')) {
+    const line = raw.trim();
+    if (!line) { ul = null; continue; }
+    if (/^#{1,4}\s/.test(line)) { ul = null; box.append(h('h4', null, inline(line.replace(/^#+\s*/, '')))); }
+    else if (/^[-*•]\s+/.test(line)) { if (!ul) { ul = h('ul'); box.append(ul); } ul.append(h('li', null, inline(line.replace(/^[-*•]\s+/, '')))); }
+    else { ul = null; box.append(h('p', null, inline(line))); }
+  }
+  return box;
+}
+let flashTimer;
+function flash(msg) { document.querySelectorAll('.flash').forEach(n => n.remove()); const n = h('div', {class: 'flash', role: 'status', text: msg}); document.body.append(n); clearTimeout(flashTimer); flashTimer = setTimeout(() => n.remove(), 4200); }
+
+/* ---------- state ---------- */
+const blank = () => ({v: 1, brief: null, steps: {}, plan: null, chosen: null, ceo: null, requests: [], campaigns: [], days: [], day: 0, seed: String(Date.now()), audit: [], reports: [], work: {}, recs: null, seq: 0});
+let S = blank();
+let tab = 'brief', busy = null, live = null, runCtl = null, lastError = null, playTimer = null, confirmReset = false;
+const caps = {sample: null, downloads: null, doc: null, ready: false, saveFailed: false};
+const LS = 'rdm-agency-v1';
+function log(actor, event) { S.audit.unshift({at: new Date().toISOString(), actor, event}); if (S.audit.length > 120) S.audit.length = 120; }
+
+let saveTimer, saving = false, dirty = false;
+function save() { dirty = true; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 600); }
+async function flush() {
+  if (saving) return; saving = true;
+  while (dirty) {
+    dirty = false;
+    while (JSON.stringify(S).length > 220000) {
+      const keys = Object.keys(S.work);
+      if (S.reports.length > 2) S.reports.pop(); else if (keys.length) delete S.work[keys[0]]; else if (S.audit.length > 20) S.audit.length = 20; else break;
+    }
+    const payload = JSON.stringify(S);
+    try { if (caps.doc) await caps.doc.set({state: payload, at: Date.now()}); else localStorage.setItem(LS, payload); caps.saveFailed = false; }
+    catch (e) { caps.saveFailed = true; }
+  }
+  saving = false;
+}
+async function boot() {
+  render();
+  const use = n => (window.claude && window.claude.use) ? window.claude.use(n).catch(() => null) : Promise.resolve(null);
+  const [sample, db, user, downloads] = await Promise.all(['sample', 'db', 'user', 'downloads'].map(use));
+  caps.sample = sample; caps.downloads = downloads;
+  let loaded = null;
+  try {
+    const uid = db && user ? await user.id() : null;
+    if (uid) { caps.doc = db.collection('data/users/' + uid).doc('agency'); const snap = await caps.doc.get(); if (snap.exists) loaded = snap.data().state; }
+  } catch (e) { caps.doc = null; }
+  if (!loaded && !caps.doc) { try { loaded = localStorage.getItem(LS); } catch (e) {} }
+  if (loaded) { try { const p = JSON.parse(loaded); if (p && p.v === 1) S = Object.assign(blank(), p); } catch (e) {} }
+  if (S.brief) tab = pending().length ? 'approvals' : S.campaigns.length ? 'dashboard' : 'work';
+  caps.ready = true; render();
+}
+
+/* ---------- gate and ledger (enforced here, in code) ---------- */
+const pending = () => S.requests.filter(r => r.status === 'PENDING');
+const approvedTotal = () => sum(S.requests.filter(r => r.status === 'APPROVED').map(r => r.approved_amount));
+const committed = () => sum(S.campaigns.map(c => c.budget));
+const spentOf = ch => sum(S.days.filter(d => !ch || d.ch === ch).map(d => d.s));
+const camp = ch => S.campaigns.find(c => c.channel === ch);
+function addRequest(r) {
+  S.seq++; const id = 'SAR-' + String(S.seq).padStart(4, '0');
+  S.requests.push(Object.assign({id, status: 'PENDING', approved_amount: 0, executed: false, at: new Date().toISOString()}, r));
+  log('CEO', `${id} raised: ${r.kind === 'increase' ? 'increase' : 'launch'} ${r.channel}, ${money(r.amount)}`);
+  return id;
+}
+function decide(id, verdict, amount) {
+  const r = S.requests.find(x => x.id === id);
+  if (!r || r.status !== 'PENDING') return;
+  if (verdict === 'APPROVED') {
+    const amt = r2(amount);
+    if (!(amt > 0)) return flash('Enter an amount above zero.');
+    if (approvedTotal() + amt > S.brief.ceiling + 0.005) return flash(`Not approved: this would take approved spend past the client ceiling of ${money(S.brief.ceiling)}.`);
+    if (amt < r.amount) r.daily_cap = Math.max(1, Math.ceil(r.daily_cap * amt / r.amount));
+    r.approved_amount = amt;
+    log('You', `${id} approved${amt !== r.amount ? ' with a changed amount' : ''}: ${money(amt)}`);
+  } else log('You', `${id} rejected`);
+  r.status = verdict; r.decided_at = new Date().toISOString();
+  save(); render();
+}
+function authorize(a) {
+  if (a.type === 'pause' || a.type === 'decrease') return null;               // always allowed
+  if (a.type !== 'launch' && a.type !== 'increase' && a.type !== 'resume') return 'Unknown action type; refused by default.';
+  const r = S.requests.find(x => x.id === a.request_id);
+  if (!r) return 'No approval record for this action.';
+  if (r.status !== 'APPROVED') return `${r.id} is ${r.status.toLowerCase()}, not approved.`;
+  if (r.channel !== a.channel) return `${r.id} covers ${r.channel}, not ${a.channel}.`;
+  if (a.type === 'resume') return null;                                         // same approval, same budget
+  if (r.executed) return `${r.id} has already been used.`;
+  if (a.amount > r.approved_amount + 0.005) return `${money(a.amount)} is more than the ${money(r.approved_amount)} approved under ${r.id}.`;
+  if (a.type === 'launch' && camp(a.channel)) return `${a.channel} is already running.`;
+  if (a.type === 'increase' && !camp(a.channel)) return `${a.channel} has not been launched.`;
+  if (committed() + a.amount > S.brief.ceiling + 0.005) return 'This would commit more than the client ceiling.';
+  return null;
+}
+function execute(a, actor) {
+  const blocked = authorize(a);
+  if (blocked) { log('Execution service', `Blocked ${a.type} ${a.channel || ''}: ${blocked}`); return blocked; }
+  const c = camp(a.channel);
+  if (a.type === 'launch') {
+    const r = S.requests.find(x => x.id === a.request_id), k = r.approved_amount / r.amount;
+    S.campaigns.push({channel: a.channel, request_id: r.id, budget: r.approved_amount, daily: r.daily_cap, status: 'live', cpm: r.cpm, ctr: r.ctr,
+      planCpa: r.expected && r.expected[1] > 0 ? r.amount / r.expected[1] : 0, planBase: r.expected ? r.expected[1] * k : 0, eff: 0.7 + 0.55 * rnd(S.seed + a.channel)()});
+    r.executed = true;
+  } else if (a.type === 'increase') { const r = S.requests.find(x => x.id === a.request_id); c.budget = r2(c.budget + r.approved_amount); c.daily = Math.max(c.daily, r.daily_cap); if (c.status === 'ended') c.status = 'live'; r.executed = true; }
+  else if (a.type === 'pause') { if (c) c.status = 'paused'; }
+  else if (a.type === 'resume') { if (c) c.status = 'live'; }
+  else if (a.type === 'decrease') { if (c) c.budget = Math.max(r2(spentOf(c.channel)), Math.min(c.budget, r2(a.amount))); }
+  log(actor || 'Ad Operations', `${a.type} ${a.channel} executed on the simulated ad platform`);
+  return null;
+}
+function deploy() {
+  let n = 0;
+  for (const r of S.requests.filter(r => r.status === 'APPROVED' && !r.executed)) if (!execute({type: r.kind, request_id: r.id, channel: r.channel, amount: r.approved_amount})) n++;
+  save(); if (n) { tab = 'dashboard'; flash(`${n} approved ${n === 1 ? 'item' : 'items'} launched on the simulated ad platform.`); } render();
+}
+
+/* ---------- simulated ad platform ---------- */
+function advanceDay() {
+  const total = flightDays();
+  if (S.day >= total || !S.campaigns.some(c => c.status === 'live')) return false;
+  const d = S.day;
+  for (const c of S.campaigns) {
+    if (c.status !== 'live') continue;
+    const r = rnd(S.seed + '|' + c.channel + '|' + d), remaining = c.budget - spentOf(c.channel);
+    if (remaining <= 0.5) { c.status = 'ended'; log('Execution service', `${c.channel} stopped: approved budget fully spent`); continue; }
+    const target = Math.min(c.daily, remaining / (total - d));
+    const spend = r2(Math.min(remaining, c.daily, target * (0.86 + 0.2 * r())));
+    const imp = c.cpm > 0 ? spend / c.cpm * 1000 * (0.9 + 0.2 * r()) : 0;
+    const clk = imp * (c.ctr > 0 ? c.ctr : 1) / 100 * (0.85 + 0.3 * r());
+    const cf = c.planCpa > 0 ? spend / c.planCpa * c.eff * (0.7 + 0.6 * r()) : 0;
+    S.days.push({d, ch: c.channel, s: spend, i: Math.round(imp), k: Math.round(clk), c: Math.floor(cf) + (r() < cf % 1 ? 1 : 0)});
+  }
+  S.day++; return true;
+}
+function totals(ch) { const rows = S.days.filter(d => !ch || d.ch === ch); return {s: sum(rows.map(d => d.s)), i: sum(rows.map(d => d.i)), k: sum(rows.map(d => d.k)), c: sum(rows.map(d => d.c))}; }
+function alerts() {
+  const out = [], total = flightDays();
+  if (S.day > 0 && S.campaigns.length) {
+    const plan = committed() / total * S.day, act = spentOf();
+    if (plan > 0 && Math.abs(act - plan) / plan > 0.1) out.push({text: `Spend is ${Math.round(Math.abs(act - plan) / plan * 100)}% ${act > plan ? 'ahead of' : 'behind'} plan for this point in the flight.`});
+    for (const c of S.campaigns) {
+      const t = totals(c.channel), days = S.days.filter(d => d.ch === c.channel).length;
+      if (c.status === 'live' && days >= 3 && c.planCpa > 0 && (t.c === 0 || t.s / t.c > 1.5 * c.planCpa)) out.push({text: `${c.channel}: cost per ${S.brief.kpi} is ${t.c ? money(t.s / t.c) : 'not measurable yet'}, against a planned ${money(c.planCpa)}.`, pause: c.channel});
+      if (c.status === 'ended') out.push({text: `${c.channel} has spent its full approved budget and stopped.`});
+    }
+  }
+  return out;
+}
+
+/* ---------- agents ---------- */
+const HOUSE = `HOUSE RULES
+- Never invent data. In this session you have no access to the client's accounts or to live market data, so every figure you give is a planning assumption: say so, and give ranges rather than single points.
+- The client budget is a hard ceiling. No money moves without the owner's recorded approval.
+- Tools for planning, modelling, data and dashboards must be open source.
+- Follow the advertising standards, platform policies and data protection law of the client's market.
+- Write plainly for a busy owner reading on a phone.`;
+const FORMAT = `FORMAT
+Plain text. Short headings on their own line starting with "## ". Short bullet lines starting with "- ". No tables. At most 260 words.`;
+function persona(a) {
+  const team = AGENTS.filter(x => x.boss === a.name);
+  return `You are the ${a.title} of Ruchi's Digital Marketing, a digital marketing agency staffed by AI agents and run to the standards of the top global media agency networks.
+Mandate: ${a.mandate}
+How you work:
+- ${a.playbook.join('\n- ')}` + (team.length ? `
+You direct these specialists and fold their work into yours:
+${team.map(t => `- ${t.title}: ${t.playbook.slice(0, 3).join('; ')}`).join('\n')}` : '');
+}
+function briefBlock() { const b = S.brief; return `CLIENT BRIEF
+Client: ${b.client}
+Market: ${b.market}
+Objective: ${b.objective}
+Primary KPI: ${b.kpi}
+Budget ceiling: ${b.ceiling} ${b.currency}
+Flight: ${b.start} to ${b.end} (${flightDays()} days)
+Notes from the owner: ${b.notes || 'none'}`; }
+const scenarioText = sc => `${sc.name} (total ${sc.total} ${S.brief.currency}): ${sc.summary} Trade-off: ${sc.tradeoff}\n` + sc.channels.map(c => `- ${c.channel}: ${c.amount}, daily cap ${c.daily_cap}, role: ${c.role}, expected ${S.brief.kpi} ${c.f_low}-${c.f_high} (base ${c.f_base}). ${c.rationale}`).join('\n');
+function priorBlock(upTo) {
+  const out = [];
+  if (S.steps.intake && upTo !== 'intake') out.push('BRIEF CHECK (Client Services)\n' + clip(S.steps.intake.text, 1800));
+  if (S.steps.strategy && !['intake', 'strategy'].includes(upTo)) out.push('STRATEGY (Chief Strategy Officer)\n' + clip(S.steps.strategy.text, 2400));
+  if (S.plan && !['intake', 'strategy', 'plan'].includes(upTo)) out.push('MEDIA PLAN SCENARIOS (Head of Media Planning)\n' + (S.chosen != null && upTo === 'after' ? 'Chosen by the CEO: ' + scenarioText(S.plan.scenarios[S.chosen]) : S.plan.scenarios.map((s, i) => `Scenario ${i}: ${scenarioText(s)}`).join('\n\n')));
+  if (S.steps.governance && ['ceo', 'after'].includes(upTo)) out.push('COMPLIANCE AND RISK REVIEW (Finance and Governance)\n' + clip(S.steps.governance.text, 1800));
+  return out.join('\n\n');
+}
+const PIPE = [
+  {key: 'intake', agent: 'client-services-director', label: 'Brief check'},
+  {key: 'strategy', agent: 'chief-strategy-officer', label: 'Strategy'},
+  {key: 'plan', agent: 'head-of-media-planning', label: 'Media plan and budget', json: true},
+  {key: 'governance', agent: 'head-of-finance-governance', label: 'Compliance and risk review'},
+  {key: 'ceo', agent: 'ceo', label: 'CEO decision', json: true},
+];
+const TASKS = {
+  intake: () => `Check this brief. Give three short sections: what is clear; the assumptions you are making so the team can proceed (at most 5); questions the owner should put to the client (at most 5). Do not block the work: the team proceeds on your stated assumptions.`,
+  strategy: () => `Write the communications strategy. Sections: the problem as a behaviour to change; audience (mark anything unevidenced as a hypothesis); proposition and key messages; the job of each channel; KPI tree with the one primary KPI; how results will be measured.`,
+  plan: () => `Build two media plan scenarios for this brief: one efficiency-led, one growth-led. Each allocates at most ${S.brief.ceiling} ${S.brief.currency} in total across 3 to 5 channels for the ${flightDays()}-day flight. Respect minimum viable spend per channel.
+Reply with only JSON in exactly this shape:
+{"scenarios":[{"name":"Efficiency-led","summary":"one sentence","tradeoff":"what this scenario gives up, one sentence","channels":[{"channel":"Paid search","role":"capture existing demand","amount":120000,"daily_cap":5000,"forecast_low":90,"forecast_base":130,"forecast_high":170,"assumed_cpm":250,"assumed_ctr_pct":3.5,"rationale":"one sentence"}]},{"name":"Growth-led","summary":"","tradeoff":"","channels":[]}],"assumptions":["short assumption", "..."]}
+Rules for the numbers: amount and daily_cap are plain numbers in ${S.brief.currency}, no separators. forecast_low, forecast_base and forecast_high are the expected number of "${S.brief.kpi}" from that channel over the whole flight; they are planning assumptions, so list what they rest on under "assumptions". assumed_cpm is cost per 1000 impressions in ${S.brief.currency}; assumed_ctr_pct is a percentage.`,
+  governance: () => `Review both scenarios before they go to the CEO. Check: budget arithmetic against the ceiling; compliance risks for this market and sector; brand safety; measurement gaps; what must be verified before any launch. Give pass or fail for each with the fix required. You are not a lawyer: flag anything that needs human legal review.`,
+  ceo: () => `Choose one scenario to recommend to the owner. Reply with only JSON in exactly this shape:
+{"chosen":0,"decision":"one sentence","why":"two or three sentences","giving_up":"one sentence on what the other scenario would have offered","risks":["short risk","short risk"],"kill_criteria":"one specific, measurable condition under which a campaign should be paused","status":"three short lines: what is done, what is next, what you need from the owner"}
+"chosen" is the scenario number, 0 or 1.`,
+};
+const ERR = {
+  not_granted: 'Claude access was declined for this page, so the agents cannot run. Reload the page to be asked again.',
+  rate_limited: 'Claude is handling too many requests right now. Wait a minute, then continue.',
+  cancelled: 'Stopped.', invalid_json: 'The agent’s reply could not be read. Run the step again.',
+  prompt_too_large: 'The brief is too long. Shorten the notes and run again.', refused: 'Claude declined this request. Reword the brief and run again.',
+  session_expired: 'Your session expired. Reload the page.', absent: 'Agents cannot run in this view. Open this page inside Claude.',
+};
+const errCopy = e => ERR[e && e.code] || `The agent could not finish${e && e.code ? ' (' + e.code + ')' : ''}. Run the step again.`;
+async function agentCall(agentName, task, o) {
+  o = o || {};
+  if (!caps.sample) throw {code: 'absent'};
+  const a = byName[agentName];
+  const prompt = [persona(a), HOUSE, briefBlock(), o.context || '', 'YOUR TASK\n' + task, o.json ? '' : (o.format || FORMAT)].filter(Boolean).join('\n\n');
+  const ctl = new AbortController(); runCtl = ctl; busy = a.title;
+  const opts = {signal: ctl.signal, onText: u => { if (live) { live.text = o.json ? 'Writing…' : u.text; const n = document.getElementById('live'); if (n) n.textContent = live.text; } }};
+  try { return o.json ? await caps.sample.json(prompt, opts) : (await caps.sample(prompt, opts)).text; }
+  finally { runCtl = null; busy = null; }
+}
+function normalisePlan(p) {
+  const days = flightDays(), ceil = S.brief.ceiling;
+  const scenarios = ((p && p.scenarios) || []).slice(0, 2).map((s, i) => {
+    const ch = (s.channels || []).map(c => ({channel: clip(c.channel || 'Channel', 40), role: clip(c.role, 120), amount: Math.floor(num(c.amount)), daily_cap: num(c.daily_cap),
+      f_low: num(c.forecast_low), f_base: num(c.forecast_base), f_high: num(c.forecast_high), cpm: num(c.assumed_cpm), ctr: num(c.assumed_ctr_pct), rationale: clip(c.rationale, 240)})).filter(c => c.amount > 0).slice(0, 6);
+    const seen = new Set(); ch.forEach(c => { while (seen.has(c.channel)) c.channel += ' 2'; seen.add(c.channel); });
+    let total = sum(ch.map(c => c.amount)), scaled = false;
+    if (total > ceil) { const k = ceil / total; ch.forEach(c => { c.amount = Math.floor(c.amount * k); c.f_low *= k; c.f_base *= k; c.f_high *= k; }); total = sum(ch.map(c => c.amount)); scaled = true; }
+    ch.forEach(c => {
+      const min = c.amount / days; if (!(c.daily_cap >= min)) c.daily_cap = Math.ceil(min * 1.25);
+      const f = [c.f_low, c.f_base, c.f_high].filter(x => x > 0).sort((a, b) => a - b);
+      c.noForecast = !f.length;
+      c.f_low = Math.round(f[0] || 0); c.f_high = Math.round(f[f.length - 1] || 0); c.f_base = Math.round(f.length === 3 ? f[1] : (c.f_low + c.f_high) / 2);
+    });
+    return {name: clip(s.name || (i ? 'Growth-led' : 'Efficiency-led'), 40), summary: clip(s.summary, 300), tradeoff: clip(s.tradeoff, 300), channels: ch, total, scaled};
+  }).filter(s => s.channels.length);
+  if (!scenarios.length) throw {code: 'invalid_json'};
+  return {scenarios, assumptions: ((p && p.assumptions) || []).map(a => clip(a, 220)).slice(0, 8)};
+}
+function buildRequests() {
+  const sc = S.plan.scenarios[S.chosen];
+  for (const c of sc.channels) addRequest({kind: 'launch', channel: c.channel, amount: c.amount, daily_cap: c.daily_cap, expected: [c.f_low, c.f_base, c.f_high], cpm: c.cpm, ctr: c.ctr, why: c.rationale, role: c.role});
+}
+async function runStep(step) {
+  live = {key: step.key, text: ''}; lastError = null; render();
+  try {
+    const res = await agentCall(step.agent, TASKS[step.key](), {json: step.json, context: priorBlock(step.key)});
+    if (step.key === 'plan') { S.plan = normalisePlan(res); S.steps.plan = {at: Date.now()}; }
+    else if (step.key === 'ceo') {
+      const idx = num(res && res.chosen) === 1 && S.plan.scenarios[1] ? 1 : 0;
+      S.chosen = idx; S.ceo = {decision: clip(res.decision, 300), why: clip(res.why, 600), giving_up: clip(res.giving_up, 300), risks: (res.risks || []).map(x => clip(x, 200)).slice(0, 5), kill: clip(res.kill_criteria, 300), status: clip(res.status, 400)};
+      S.steps.ceo = {at: Date.now()}; buildRequests();
+    } else S.steps[step.key] = {text: clip(res, 5000), at: Date.now()};
+    log(byName[step.agent].title, step.label + ' completed');
+  } finally { live = null; }
+  save();
+}
+async function runPipeline() {
+  for (const step of PIPE) {
+    if (S.steps[step.key]) continue;
+    try { await runStep(step); } catch (e) { lastError = {where: step.label, msg: errCopy(e)}; render(); return; }
+    render();
+  }
+  if (pending().length) { tab = 'approvals'; flash('The CEO has spend requests waiting for your decision.'); }
+  render();
+}
+async function specialistWork(name) {
+  const a = byName[name]; live = {key: 'work:' + name, text: ''}; lastError = null; render();
+  try {
+    const text = await agentCall(name, `Produce your main deliverable for this campaign: ${a.outputs[0]}. Be specific to this client and plan. Where you would need account access or data you do not have, say exactly what you need.`, {context: priorBlock('after'), format: FORMAT.replace('260', '320')});
+    S.work[name] = {text: clip(text, 4500), at: Date.now()};
+    const keys = Object.keys(S.work); if (keys.length > 14) delete S.work[keys[0]];
+    log(a.title, 'Deliverable produced'); save();
+  } catch (e) { lastError = {where: a.title, msg: errCopy(e)}; }
+  finally { live = null; render(); }
+}
+function dataPack() {
+  const b = S.brief, t = totals(), L = [`LEDGER (${b.currency}): ceiling ${b.ceiling}; approved ${approvedTotal()}; committed ${committed()}; spent ${r2(t.s)}; remaining of ceiling ${r2(b.ceiling - t.s)}`,
+    `FLIGHT: day ${S.day} of ${flightDays()} (${b.start} to ${b.end})`, 'CHANNEL TOTALS', 'channel,status,approved_budget,spent,impressions,clicks,' + b.kpi + ',planned_cost_per_' + b.kpi];
+  for (const c of S.campaigns) { const x = totals(c.channel); L.push([c.channel, c.status, c.budget, r2(x.s), x.i, x.k, x.c, r2(c.planCpa)].join(',')); }
+  L.push('DAILY ROWS (most recent 60)', 'day,date,channel,spend,impressions,clicks,' + b.kpi);
+  for (const d of S.days.slice(-60)) L.push([d.d + 1, addDays(b.start, d.d), d.ch, d.s, d.i, d.k, d.c].join(','));
+  return L.join('\n');
+}
+async function askReport(q) {
+  live = {key: 'report', text: ''}; lastError = null; render();
+  try {
+    const text = await agentCall('adhoc-reporting-analyst', `Answer the owner's question: "${q}"\nGive the answer first, then the evidence with the numbers you used, then caveats. These figures come from a DRY RUN on a simulated ad platform: say so in one line. If the data cannot answer the question, say what would be needed.`,
+      {context: priorBlock('after') + '\n\nDATA\n' + dataPack(), format: FORMAT.replace('260', '220')});
+    S.reports.unshift({q: clip(q, 300), a: clip(text, 4000), at: Date.now(), day: S.day}); if (S.reports.length > 10) S.reports.length = 10;
+    log('Ad Hoc Reporting Analyst', 'Report answered'); save();
+  } catch (e) { lastError = {where: 'Report', msg: errCopy(e)}; }
+  finally { live = null; render(); }
+}
+async function optimise() {
+  live = {key: 'opt', text: ''}; lastError = null; render();
+  try {
+    const res = await agentCall('head-of-performance', `Review in-flight performance and recommend budget changes per channel. Reallocate toward marginal return. The headroom still unapproved under the client ceiling is ${Math.max(0, r2(S.brief.ceiling - approvedTotal()))} ${S.brief.currency}; total new budgets must not need more than that.
+Reply with only JSON in exactly this shape:
+{"summary":"two sentences","changes":[{"channel":"exact channel name from the data","action":"increase","new_budget":150000,"reason":"one sentence"}]}
+"action" is one of increase, decrease, pause, hold. "new_budget" is the channel's new total budget for the flight.`, {json: true, context: 'These figures are from a dry run on a simulated ad platform.\n\nDATA\n' + dataPack()});
+    const recs = ((res && res.changes) || []).map(x => ({channel: String(x.channel || ''), action: String(x.action || 'hold').toLowerCase(), nb: num(x.new_budget), reason: clip(x.reason, 240)})).filter(x => camp(x.channel) && x.action !== 'hold');
+    let head = S.brief.ceiling - approvedTotal() - sum(pending().map(r => r.amount));
+    for (const x of recs) {
+      const c = camp(x.channel);
+      if (x.action === 'increase') {
+        const extra = Math.floor(Math.min(x.nb - c.budget, head));
+        if (extra > 0) { head -= extra; x.sar = addRequest({kind: 'increase', channel: c.channel, amount: extra, daily_cap: Math.ceil(c.daily * (c.budget + extra) / c.budget), why: x.reason, role: 'Increase recommended by the Head of Performance', expected: null}); }
+        else x.note = 'No headroom left under the client ceiling.';
+      }
+    }
+    S.recs = {summary: clip(res && res.summary, 400), items: recs, day: S.day}; log('Head of Performance and Activation', 'Optimisation review completed'); save();
+  } catch (e) { lastError = {where: 'Optimisation review', msg: errCopy(e)}; }
+  finally { live = null; render(); }
+}
+
+/* ---------- views ---------- */
+const TABS = [['brief', 'Brief'], ['work', 'Work'], ['approvals', 'Approvals'], ['dashboard', 'Dashboard'], ['reports', 'Reports'], ['team', 'Team']];
+function stageIndex() {
+  if (!S.brief) return 0;
+  const done = PIPE.filter(p => S.steps[p.key]).length;
+  if (done < 5) return 1 + done;
+  if (!S.campaigns.length) return 6;
+  return 7;
+}
+const errorBox = () => lastError ? h('div', {class: 'notice bad', role: 'alert'}, h('strong', {text: lastError.where + ': '}), lastError.msg) : null;
+const stopBtn = () => runCtl ? h('button', {class: 'btn stop', onclick: () => runCtl && runCtl.abort()}, 'Stop') : null;
+const liveBox = () => h('p', {class: 'out muted', id: 'live', text: (live && live.text) || 'Thinking…'});
+const needBrief = () => h('div', {class: 'panel'}, h('h3', {text: 'No brief yet'}), h('p', {class: 'muted', text: 'Give the agency a client brief and a budget, and the team starts from there.'}), h('button', {class: 'btn', onclick: () => { tab = 'brief'; render(); }}, 'Write the brief'));
+
+function viewBrief() {
+  if (S.brief) {
+    const b = S.brief;
+    return [h('div', {class: 'panel'}, h('h2', {text: b.client}),
+      h('div', {class: 'facts'}, [['Objective', b.objective], ['Primary KPI', b.kpi], ['Budget ceiling', money(b.ceiling)], ['Flight', `${b.start} to ${b.end}`], ['Market', b.market]].map(([k, v]) => h('div', null, h('span', {text: k}), v))),
+      b.notes ? h('p', {class: 'small muted', text: b.notes}) : null,
+      h('div', {class: 'row'}, h('button', {class: 'btn', onclick: () => { tab = 'work'; render(); }}, 'Go to the team’s work'),
+        h('button', {class: 'btn quiet', onclick: () => { if (!confirmReset) { confirmReset = true; render(); return; } clearInterval(playTimer); playTimer = null; if (runCtl) runCtl.abort(); S = blank(); confirmReset = false; lastError = null; save(); render(); }}, confirmReset ? 'Confirm: clear this brief and all its work' : 'Start a new brief')))];
+  }
+  const f = {}; const field = (id, label, attrs, hint) => h('div', null, h('label', {for: id, text: label}), (f[id] = h(attrs.tag || 'input', Object.assign({id}, attrs, {tag: null}))), hint ? h('p', {class: 'hint', text: hint}) : null);
+  const today = iso(new Date());
+  const form = h('div', {class: 'panel'}, h('h2', {text: 'New client brief'}),
+    h('p', {class: 'muted', text: 'The agency plans within this budget and asks you before any of it is spent.'}),
+    h('div', {class: 'grid2'},
+      field('client', 'Client and what they sell', {placeholder: 'Tulsi Tea Co., online tea brand'}),
+      field('market', 'Market', {value: 'India'}),
+      field('objective', 'Objective', {placeholder: 'Grow online orders from new customers'}),
+      field('kpi', 'Primary KPI (what is counted)', {placeholder: 'purchases'}, 'One thing, plural: purchases, leads, sign-ups, app installs.'),
+      field('ceiling', 'Budget ceiling', {inputmode: 'decimal', placeholder: '500000'}),
+      field('currency', 'Currency code', {value: 'INR', maxlength: '3'}),
+      field('start', 'Start date', {type: 'date', value: addDays(today, 7)}),
+      field('end', 'End date', {type: 'date', value: addDays(today, 36)})),
+    field('notes', 'Anything else the team should know', {tag: 'textarea', placeholder: 'Audience, offer, past results, brand rules, legal constraints, what the budget must cover.'}),
+    h('div', {class: 'row', style: 'margin-top:1rem'},
+      h('button', {class: 'btn', onclick: () => {
+        const v = k => f[k].value.trim(), ceiling = num(v('ceiling')), cur = v('currency').toUpperCase();
+        if (!v('client') || !v('objective') || !v('kpi')) return flash('Fill in the client, the objective and the primary KPI.');
+        if (!(ceiling > 0)) return flash('Enter the budget ceiling as a number above zero.');
+        if (!/^[A-Z]{3}$/.test(cur)) return flash('Use a three-letter currency code, such as INR or USD.');
+        if (!v('start') || !v('end') || v('end') < v('start')) return flash('The end date must be on or after the start date.');
+        S.brief = {client: clip(v('client'), 160), market: clip(v('market') || 'Not stated', 80), objective: clip(v('objective'), 300), kpi: clip(v('kpi'), 40), ceiling: r2(ceiling), currency: cur, start: v('start'), end: v('end'), notes: clip(v('notes'), 3000)};
+        log('You', `Brief submitted for ${S.brief.client}, ceiling ${money(S.brief.ceiling)}`); save(); tab = 'work'; render();
+      }}, 'Give this brief to the agency'),
+      h('button', {class: 'btn quiet', onclick: () => { f.client.value = 'Tulsi Tea Co., an online brand selling loose-leaf Indian teas'; f.objective.value = 'Grow online orders from new customers'; f.kpi.value = 'purchases'; f.ceiling.value = '500000'; f.notes.value = 'Sample brief. Average order about INR 900. Sells through its own website. No past campaign data available. Budget covers media only.'; }}, 'Fill in a sample brief')));
+  return [form];
+}
+
+function planView() {
+  return S.plan.scenarios.map((sc, i) => h('div', {class: 'panel'},
+    h('div', {class: 'row spread'}, h('h3', {text: sc.name + ': ' + money(sc.total)}), S.chosen === i ? h('span', {class: 'status approved', text: 'Chosen by the CEO'}) : null),
+    h('p', {text: sc.summary}), h('p', {class: 'muted small', text: 'Gives up: ' + sc.tradeoff}),
+    sc.scaled ? h('p', {class: 'small', text: 'The agent’s figures exceeded the ceiling, so the amounts were scaled down to fit.'}) : null,
+    h('div', {class: 'scroll'}, h('table', {class: 'num'}, h('thead', null, h('tr', null, ['Channel', 'Budget', 'Daily cap', `Expected ${S.brief.kpi}`, 'Role'].map(t => h('th', {text: t})))),
+      h('tbody', null, sc.channels.map(c => h('tr', null, h('td', {text: c.channel}), h('td', {text: money(c.amount)}), h('td', {text: money(c.daily_cap)}), h('td', {text: c.noForecast ? 'No forecast given' : `${int(c.f_low)} to ${int(c.f_high)}`}), h('td', {style: 'white-space:normal;text-align:left;min-width:12rem', text: c.role}))))))));
+}
+function viewWork() {
+  if (!S.brief) return [needBrief()];
+  const doneAll = PIPE.every(p => S.steps[p.key]), started = PIPE.some(p => S.steps[p.key]);
+  const out = [];
+  if (!caps.sample && caps.ready) out.push(h('div', {class: 'notice bad', text: ERR.absent}));
+  out.push(errorBox());
+  if (!doneAll) out.push(h('div', {class: 'panel'}, h('h2', {text: started ? 'The team is part-way through' : 'Ready to start'}),
+    h('p', {class: 'muted', text: 'Five agents work in order: brief check, strategy, media plan, compliance review, then the CEO’s decision. It takes a few minutes. Nothing is spent; the CEO will ask for your approval at the end.'}),
+    h('div', {class: 'row'}, h('button', {class: 'btn', disabled: !!busy || !caps.sample, onclick: runPipeline}, started ? 'Continue' : 'Run the agency on this brief'), stopBtn())));
+  for (const step of PIPE) {
+    const a = byName[step.agent], st = S.steps[step.key], working = live && live.key === step.key;
+    if (!st && !working) { out.push(h('div', {class: 'panel'}, h('div', {class: 'row spread'}, h('h3', {text: step.label}), h('span', {class: 'status', text: 'Waiting'})), h('p', {class: 'muted small', text: a.title}))); continue; }
+    const body = working ? liveBox() : step.key === 'plan' ? h('div', null, planView(), S.plan.assumptions.length ? h('details', null, h('summary', {text: 'Planning assumptions'}), h('p', {class: 'small muted', text: 'These are the agent’s assumptions, not verified against platform data.'}), h('ul', null, S.plan.assumptions.map(x => h('li', {text: x})))) : null)
+      : step.key === 'ceo' ? h('div', {class: 'rich'}, h('p', null, h('strong', {text: S.ceo.decision})), h('p', {text: S.ceo.why}), h('p', {class: 'muted', text: 'Giving up: ' + S.ceo.giving_up}), h('h4', {text: 'Risks'}), h('ul', null, S.ceo.risks.map(x => h('li', {text: x}))), h('h4', {text: 'Pause a campaign when'}), h('p', {text: S.ceo.kill}), h('h4', {text: 'Status for you'}), h('p', {class: 'out', text: S.ceo.status}))
+      : rich(st.text);
+    out.push(h('div', {class: 'panel'}, h('div', {class: 'row spread'}, h('h3', {text: step.label}), h('span', {class: 'status ' + (working ? 'working' : 'done'), text: working ? 'Working' : 'Done'})), h('p', {class: 'muted small', text: a.title}), body));
+  }
+  if (doneAll && pending().length) out.push(h('div', {class: 'notice'}, `${pending().length} spend ${pending().length === 1 ? 'request is' : 'requests are'} waiting for your decision. `, h('button', {class: 'btn', onclick: () => { tab = 'approvals'; render(); }}, 'Review spend requests')));
+  const works = Object.entries(S.work);
+  if (works.length) { out.push(h('h2', {text: 'Specialist work', style: 'margin-top:1.4rem'})); for (const [n, w] of works.reverse()) out.push(h('div', {class: 'panel'}, h('h3', {text: byName[n].title}), rich(w.text))); }
+  return out;
+}
+
+function slip(r) {
+  if (r.status !== 'PENDING') return h('div', {class: 'slip decided ' + r.status.toLowerCase()}, h('div', {class: 'slip-head'}, h('strong', {text: `${r.id}: ${r.kind === 'increase' ? 'increase ' : ''}${r.channel}`}), h('span', {class: 'status ' + r.status.toLowerCase(), text: r.status === 'APPROVED' ? (r.executed ? 'Approved and launched' : 'Approved, not yet launched') : 'Rejected'})),
+    h('p', {class: 'small muted num', text: r.status === 'APPROVED' ? `${money(r.approved_amount)} approved${r.approved_amount !== r.amount ? ` (requested ${money(r.amount)})` : ''}, daily cap ${money(r.daily_cap)}` : `${money(r.amount)} requested`}));
+  const headroom = S.brief.ceiling - approvedTotal();
+  const amt = h('input', {id: 'amt-' + r.id, inputmode: 'decimal', value: String(r.amount)});
+  return h('div', {class: 'slip'},
+    h('div', {class: 'slip-head'}, h('strong', {text: `Spend approval request ${r.id}`}), h('span', {class: 'status pending', text: 'Needs your decision'})),
+    h('div', {class: 'slip-amount num', text: money(r.amount)}),
+    h('p', {text: `${r.kind === 'increase' ? 'Increase the budget of' : 'Launch'} ${r.channel}. ${r.why || ''}`}),
+    h('div', {class: 'facts num'},
+      h('div', null, h('span', {text: 'Dates'}), `${r.kind === 'increase' ? addDays(S.brief.start, S.day) : S.brief.start} to ${S.brief.end}`),
+      h('div', null, h('span', {text: 'Daily cap'}), money(r.daily_cap)),
+      r.expected ? h('div', null, h('span', {text: `Expected ${S.brief.kpi} (assumption)`}), r.expected[1] > 0 ? `${int(r.expected[0])} to ${int(r.expected[2])}` : 'No forecast given') : null,
+      h('div', null, h('span', {text: 'Ceiling left after this'}), money(headroom - r.amount)),
+      h('div', null, h('span', {text: 'Already approved'}), money(approvedTotal()))),
+    S.ceo ? h('details', null, h('summary', {text: 'Risks and when it will be paused'}), h('ul', null, S.ceo.risks.map(x => h('li', {text: x}))), h('p', {text: 'Pause when: ' + S.ceo.kill})) : null,
+    h('div', {class: 'slip-actions'},
+      h('div', {class: 'field'}, h('label', {for: 'amt-' + r.id, text: 'Amount to approve'}), amt),
+      h('button', {class: 'btn go', onclick: () => decide(r.id, 'APPROVED', num(amt.value))}, 'Approve'),
+      h('button', {class: 'btn stop', onclick: () => decide(r.id, 'REJECTED')}, 'Reject')));
+}
+function ledgerTiles() { const sp = spentOf(); return h('div', {class: 'tiles num'}, [['Client ceiling', S.brief.ceiling], ['Approved by you', approvedTotal()], ['Committed to campaigns', committed()], ['Spent (simulated)', sp], ['Ceiling not yet approved', S.brief.ceiling - approvedTotal()]].map(([k, v]) => h('div', {class: 'tile'}, h('b', {text: money(v)}), h('span', {text: k})))); }
+function viewApprovals() {
+  if (!S.brief) return [needBrief()];
+  const out = [ledgerTiles()], pend = pending(), ready = S.requests.filter(r => r.status === 'APPROVED' && !r.executed);
+  if (!S.requests.length) out.push(h('div', {class: 'panel'}, h('h3', {text: 'Nothing to approve yet'}), h('p', {class: 'muted', text: 'When the CEO has a plan, each channel’s spend arrives here as a request. Nothing launches until you approve it.'})));
+  if (pend.length > 1) out.push(h('div', {class: 'row', style: 'margin-bottom:.9rem'}, h('button', {class: 'btn go', onclick: () => { for (const r of pending()) decide(r.id, 'APPROVED', r.amount); }}, `Approve all ${pend.length} as requested`)));
+  pend.forEach(r => out.push(slip(r)));
+  if (ready.length) out.push(h('div', {class: 'notice good'}, `${ready.length} approved ${ready.length === 1 ? 'item is' : 'items are'} ready. `, h('button', {class: 'btn', onclick: deploy}, 'Launch approved campaigns (dry run)')));
+  S.requests.filter(r => r.status !== 'PENDING').reverse().forEach(r => out.push(slip(r)));
+  if (S.requests.length) out.push(h('div', {class: 'panel'}, h('h3', {text: 'Test the gate'}), h('p', {class: 'muted small', text: 'Tries to launch something you have not approved. The execution service should refuse and record it below.'}),
+    h('button', {class: 'btn quiet', onclick: () => { const r = S.requests.find(x => x.status !== 'APPROVED'); const why = execute(r ? {type: 'launch', request_id: r.id, channel: r.channel, amount: r.amount} : {type: 'launch', request_id: 'SAR-0000', channel: 'Unapproved channel', amount: 1000}); save(); render(); flash(why ? 'Blocked: ' + why : 'It went through, which should not happen.'); }}, 'Try an unapproved launch')));
+  out.push(h('div', {class: 'panel'}, h('details', null, h('summary', {text: `Audit log (${S.audit.length})`}), h('ul', {class: 'log'}, S.audit.map(a => h('li', null, h('span', {class: 'muted num', text: a.at.slice(0, 16).replace('T', ' ') + '  '}), h('strong', {text: a.actor + ': '}), a.event))))));
+  return out;
+}
+
+function chart() {
+  const W = 360, H = 190, P = 6, total = flightDays(), max = Math.max(committed(), 1), NS = 'http://www.w3.org/2000/svg';
+  const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', `0 0 ${W} ${H}`); s.setAttribute('class', 'chart'); s.setAttribute('role', 'img'); s.setAttribute('aria-label', 'Cumulative spend against plan');
+  const mk = (t, a) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); s.append(n); return n; };
+  const x = d => P + (W - P - 8) * d / total, y = v => H - 22 - (H - 34) * v / max;
+  mk('line', {x1: P, y1: y(0), x2: W - 8, y2: y(0), stroke: 'var(--line)'}); mk('line', {x1: P, y1: y(max), x2: W - 8, y2: y(max), stroke: 'var(--line)', 'stroke-dasharray': '3 4'});
+  mk('line', {x1: x(0), y1: y(0), x2: x(total), y2: y(max), stroke: 'var(--muted)', 'stroke-width': 1.5, 'stroke-dasharray': '6 5'});
+  let cum = 0; const pts = [`${x(0)},${y(0)}`];
+  for (let d = 0; d < S.day; d++) { cum += sum(S.days.filter(r => r.d === d).map(r => r.s)); pts.push(`${x(d + 1)},${y(cum)}`); }
+  mk('polyline', {points: pts.join(' '), fill: 'none', stroke: 'var(--go)', 'stroke-width': 3, 'stroke-linejoin': 'round'});
+  const txt = (t, a) => { const n = mk('text', Object.assign({fill: 'var(--muted)', 'font-size': 12}, a)); n.textContent = t; };
+  txt('Committed budget', {x: P, y: y(max) - 5}); txt('Day 0', {x: P, y: H - 5}); txt('Day ' + total, {x: W - 8, y: H - 5, 'text-anchor': 'end'});
+  txt('Dashed: even pacing. Solid: spent', {x: W / 2, y: H - 5, 'text-anchor': 'middle'});
+  return s;
+}
+function viewDashboard() {
+  if (!S.brief) return [needBrief()];
+  if (!S.campaigns.length) return [h('div', {class: 'panel'}, h('h3', {text: 'Nothing is running yet'}), h('p', {class: 'muted', text: 'The dashboard fills in once you approve spend and launch. Until then there is nothing to measure.'}), h('button', {class: 'btn', onclick: () => { tab = pending().length || S.requests.length ? 'approvals' : 'work'; render(); }}, pending().length ? 'Review spend requests' : 'See where things stand'))];
+  const total = flightDays(), t = totals(), kpi = S.brief.kpi, over = S.day >= total || !S.campaigns.some(c => c.status === 'live');
+  const out = [h('div', {class: 'notice'}, h('strong', {text: 'Simulated data. '}), `These are not real results. A stand-in ad platform generates each day’s figures from the plan’s assumptions so the agency can be tested end to end. Data as of simulated day ${S.day} of ${total}${S.day ? ' (' + addDays(S.brief.start, S.day - 1) + ')' : ''}.`),
+    h('div', {class: 'row', style: 'margin-bottom:.9rem'},
+      h('button', {class: 'btn', disabled: over, onclick: () => { advanceDay(); save(); render(); }}, 'Advance one day'),
+      h('button', {class: 'btn quiet', disabled: over && !playTimer, onclick: () => { if (playTimer) { clearInterval(playTimer); playTimer = null; } else playTimer = setInterval(() => { if (!advanceDay()) { clearInterval(playTimer); playTimer = null; } save(); if (tab === 'dashboard' && !busy) render(); }, 1300); render(); }}, playTimer ? 'Pause the clock' : 'Run the clock'),
+      over ? h('span', {class: 'muted small', text: S.day >= total ? 'The flight has ended.' : 'No campaign is live.'}) : null),
+    h('div', {class: 'tiles num'}, [[money(t.s), 'Spent'], [money(committed() - t.s), 'Left in committed budgets'], [int(t.i), 'Impressions'], [int(t.k), 'Clicks'], [t.i ? (t.k / t.i * 100).toFixed(2) + '%' : 'n/a', 'Click-through rate'], [int(t.c), kpi.charAt(0).toUpperCase() + kpi.slice(1)], [t.c ? money(t.s / t.c) : 'n/a', 'Cost per ' + kpi.replace(/s$/, '')]].map(([v, k]) => h('div', {class: 'tile'}, h('b', {text: v}), h('span', {text: k})))),
+    h('div', {class: 'panel'}, h('h3', {text: 'Pacing'}), chart())];
+  const al = alerts();
+  if (al.length) out.push(h('div', {class: 'panel'}, h('h3', {text: 'Alerts'}), al.map(a => h('div', {class: 'row spread', style: 'padding:.35rem 0;border-bottom:1px solid var(--line)'}, h('span', {text: a.text}), a.pause ? h('button', {class: 'btn stop', onclick: () => { execute({type: 'pause', channel: a.pause}, 'You'); save(); render(); }}, 'Pause it') : null))));
+  out.push(h('div', {class: 'panel'}, h('h3', {text: 'By channel'}), h('div', {class: 'scroll'}, h('table', {class: 'num'},
+    h('thead', null, h('tr', null, ['Channel', 'Status', 'Budget', 'Spent', 'Impr.', 'Clicks', kpi, 'Cost per', 'Planned', ''].map(x => h('th', {text: x})))),
+    h('tbody', null, S.campaigns.map(c => { const x = totals(c.channel); return h('tr', null, h('td', {text: c.channel}), h('td', null, h('span', {class: 'status ' + (c.status === 'live' ? 'live' : ''), text: c.status})), h('td', {text: money(c.budget)}), h('td', {text: money(x.s)}), h('td', {text: int(x.i)}), h('td', {text: int(x.k)}), h('td', {text: int(x.c)}), h('td', {text: x.c ? money(x.s / x.c) : 'n/a'}), h('td', {text: c.planCpa ? money(c.planCpa) : 'n/a'}),
+      h('td', null, c.status === 'live' ? h('button', {class: 'btn quiet', onclick: () => { execute({type: 'pause', channel: c.channel}, 'You'); save(); render(); }}, 'Pause') : c.status === 'paused' ? h('button', {class: 'btn quiet', onclick: () => { const why = execute({type: 'resume', channel: c.channel, request_id: c.request_id}, 'You'); if (why) flash('Blocked: ' + why); save(); render(); }}, 'Resume') : null)); }))))));
+  const working = live && live.key === 'opt';
+  out.push(errorBox(), h('div', {class: 'panel'}, h('h3', {text: 'Optimisation review'}), h('p', {class: 'muted small', text: 'The Head of Performance reads the figures and recommends budget changes. Increases come to you as spend requests; cuts and pauses you can apply at once.'}),
+    h('div', {class: 'row'}, h('button', {class: 'btn', disabled: !!busy || !caps.sample || S.day === 0, onclick: optimise}, 'Ask for a review'), working ? stopBtn() : null), working ? liveBox() : null,
+    S.recs && !working ? h('div', null, h('p', {text: S.recs.summary}), h('p', {class: 'small muted', text: `Based on data to day ${S.recs.day}.`}), S.recs.items.length ? S.recs.items.map(x => { const c = camp(x.channel); return h('div', {class: 'row spread', style: 'padding:.45rem 0;border-top:1px solid var(--line)'}, h('span', null, h('strong', {text: `${x.channel}: ${x.action}${x.action === 'pause' ? '' : ' to ' + money(x.nb)}. `}), x.reason, x.note ? ' ' + x.note : ''),
+      x.sar ? h('button', {class: 'btn quiet', onclick: () => { tab = 'approvals'; render(); }}, 'See ' + x.sar) : x.done ? h('span', {class: 'status done', text: 'Applied'}) : x.action === 'decrease' ? h('button', {class: 'btn quiet', onclick: () => { execute({type: 'decrease', channel: x.channel, amount: x.nb}, 'You'); x.done = true; save(); render(); }}, 'Apply the cut') : x.action === 'pause' && c && c.status === 'live' ? h('button', {class: 'btn quiet', onclick: () => { execute({type: 'pause', channel: x.channel}, 'You'); x.done = true; save(); render(); }}, 'Pause it') : null); }) : h('p', {class: 'muted', text: 'No changes recommended.'})) : null));
+  return out;
+}
+
+function viewReports() {
+  if (!S.brief) return [needBrief()];
+  const q = h('textarea', {id: 'q', placeholder: 'Which channel is giving the lowest cost per result, and should it get more budget?'});
+  const run = text => { const v = (text || q.value).trim(); if (!v) return flash('Type a question first.'); askReport(v); };
+  const working = live && live.key === 'report';
+  const out = [errorBox(), h('div', {class: 'panel'}, h('h2', {text: 'Ask for a report'}), h('label', {for: 'q', text: 'Your question'}), q,
+    h('div', {class: 'row', style: 'margin-top:.7rem'}, h('button', {class: 'btn', disabled: !!busy || !caps.sample, onclick: () => run()}, 'Get the answer'), working ? stopBtn() : null,
+      ['Summarise performance so far', 'Explain pacing against plan', 'What should we change next week?'].map(p => h('button', {class: 'btn quiet', disabled: !!busy || !caps.sample, onclick: () => run(p)}, p))),
+    S.campaigns.length ? null : h('p', {class: 'hint', text: 'Nothing has launched yet, so reports can only draw on the plan.'}), working ? liveBox() : null)];
+  if (S.days.length) out.push(h('div', {class: 'row', style: 'margin-bottom:.9rem'}, caps.downloads ? h('button', {class: 'btn quiet', onclick: async () => { const b = S.brief, csv = ['day,date,channel,spend,impressions,clicks,' + b.kpi].concat(S.days.map(d => [d.d + 1, addDays(b.start, d.d), '"' + d.ch.replace(/"/g, '""') + '"', d.s, d.i, d.k, d.c].join(','))).join('\n'); try { await caps.downloads.save({filename: 'simulated-performance.csv', data: csv}); flash('Saved simulated-performance.csv'); } catch (e) { if (e && e.code !== 'declined') flash('The file could not be saved.'); } }}, 'Save the daily data as CSV') : null));
+  S.reports.forEach(r => out.push(h('div', {class: 'panel'}, h('h3', {text: r.q}), h('p', {class: 'small muted', text: `Answered with simulated data to day ${r.day}.`}), rich(r.a))));
+  return out;
+}
+
+function viewTeam() {
+  const out = [errorBox(), h('p', {class: 'muted', text: `${AGENTS.length} agents. The CEO directs seven department heads; each head directs its specialists. Open any agent to see how it works, or put it to work on the current brief.`})];
+  const card = a => { const working = live && live.key === 'work:' + a.name, hasWork = S.work[a.name]; return h('div', {class: 'agent'}, h('details', null, h('summary', null, a.title, hasWork ? h('span', {class: 'status done', style: 'margin-left:.5rem', text: 'Has delivered'}) : null),
+    h('p', {class: 'small', text: a.mandate}), h('ul', {class: 'small'}, a.playbook.map(x => h('li', {text: x}))),
+    a.boss && S.brief ? h('div', {class: 'row'}, h('button', {class: 'btn quiet', disabled: !!busy || !caps.sample, onclick: () => specialistWork(a.name)}, hasWork ? 'Redo the deliverable' : 'Put to work on this brief'), working ? stopBtn() : null) : null,
+    working ? liveBox() : hasWork ? h('p', {class: 'small muted', text: 'Its deliverable is on the Work tab.'}) : null)); };
+  out.push(h('div', {class: 'panel'}, h('h3', {text: 'Leadership'}), card(byName.ceo)));
+  for (const head of AGENTS.filter(a => a.boss === 'ceo')) out.push(h('div', {class: 'panel'}, h('h3', {text: head.dept}), card(head), h('div', {class: 'indent'}, AGENTS.filter(a => a.boss === head.name).map(card))));
+  return out;
+}
+
+const VIEWS = {brief: viewBrief, work: viewWork, approvals: viewApprovals, dashboard: viewDashboard, reports: viewReports, team: viewTeam};
+function render() {
+  const keepOpen = new Set([...document.querySelectorAll('#app details[open] > summary')].map(s => s.textContent));
+  const qv = document.getElementById('q') ? document.getElementById('q').value : '';
+  const steps = ['Brief', 'Brief check', 'Strategy', 'Media plan', 'Compliance review', 'CEO decision', 'Your approval', 'Live and reporting'], si = stageIndex();
+  document.getElementById('steps').replaceChildren(...steps.map((s, i) => h('li', {class: i < si ? 'done' : i === si ? 'now' : '', text: s, 'aria-current': i === si ? 'step' : null})));
+  document.getElementById('tabs').replaceChildren(...TABS.map(([k, label]) => h('button', {class: 'tab', role: 'tab', 'aria-selected': String(tab === k), onclick: () => { tab = k; confirmReset = false; render(); window.scrollTo(0, 0); }}, label, k === 'approvals' && pending().length ? h('span', {class: 'badge', text: pending().length}) : null)));
+  const app = document.getElementById('app');
+  app.replaceChildren(...[caps.saveFailed ? h('div', {class: 'notice bad', text: 'Your work could not be saved in this view. It will be lost if you close the page.'}) : null].concat(caps.ready ? VIEWS[tab]() : [h('p', {class: 'muted', text: 'Opening the agency…'})]).flat().filter(Boolean));
+  app.querySelectorAll('details > summary').forEach(s => { if (keepOpen.has(s.textContent)) s.parentElement.open = true; });
+  if (qv && document.getElementById('q')) document.getElementById('q').value = qv;
+}
+boot();
+})();
+</script>
+</body>
+</html>
