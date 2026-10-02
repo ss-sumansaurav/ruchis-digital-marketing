@@ -1,0 +1,7 @@
+ruchi_warehouse:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: "{{ env_var('RUCHI_WAREHOUSE', '../state/warehouse.duckdb') }}"
+      threads: 4

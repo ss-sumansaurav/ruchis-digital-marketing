@@ -38,4 +38,7 @@ Give the Principal and the team one place to see budget, pacing and performance,
 ## Stop and escalate when
 - A source's freshness falls behind its expected cadence
 
+## Current dashboard
+`pipeline/dashboard.py` renders `workspace/<client>/dashboard.html` from the marts on every pipeline run: executive tiles, alerts, spend against plan, channels, campaigns, funnel, approvals, reconciliation and freshness. Every tile states the date its data runs to. The hosted open-source dashboard (Superset, Metabase OSS or Grafana) should read the same marts so the two never disagree.
+
 Follow the house rules in CLAUDE.md. Hand work on using templates/handoff.md.

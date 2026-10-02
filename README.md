@@ -7,7 +7,7 @@ An AI-run digital marketing agency: 34 agents in a three-tier hierarchy, a code-
 1. **The agency console** (`app/agency-console.html`, also published as a Claude artifact). You give it a brief and a budget; the agents run on Claude, the CEO raises spend requests, you approve or reject each one with a button, and approved campaigns launch on a simulated ad platform with a live dashboard and ad hoc reports. All performance figures in it are simulated.
 2. **The Claude Code setup** in this folder (agents as subagents plus the Python approval gate), described below.
 
-Connections to real ad platforms and the hosted open-source data stack are not built yet. See ARCHITECTURE.md.
+The data pipeline (DuckDB warehouse, dbt Core metric layer, dashboard and ad hoc reports) is built and tested on synthetic data. Connections to real ad platforms are not built yet. See ARCHITECTURE.md.
 
 ## What is in this folder
 
@@ -17,7 +17,10 @@ Connections to real ad platforms and the hosted open-source data stack are not b
 | `.claude/agents/` | The agents: `ceo.md`, 7 department heads, 26 specialists |
 | `CLAUDE.md` | House rules every agent works under |
 | `agency/` | Approval gate, budget ledger, execution service (Python, no dependencies) |
-| `tests/` | 21 tests proving unapproved or out-of-scope spend is blocked |
+| `pipeline/` | Ingestion, synthetic data, dashboard and ad hoc report runner |
+| `warehouse/` | dbt Core project: staging, core fact table, marts, metric definitions |
+| `reports/queries/` | Saved ad hoc queries |
+| `tests/` | 21 gate tests (unapproved or out-of-scope spend is blocked) and 11 pipeline tests |
 | `templates/` | Client brief, Spend Approval Request, handoff |
 | `config/agency.yaml` | Setup values, including the ones still to confirm |
 | `ARCHITECTURE.md` | Design, build status, what is needed from you |
@@ -30,6 +33,14 @@ The agents are written as Claude Code project subagents. Open this folder in Cla
 Check the gate works on your machine first (Python 3.10 or later):
 
     python -m unittest discover -s tests -v
+
+The pipeline tests need `pip install -r requirements.txt` (duckdb, dbt-duckdb) and are skipped without it.
+
+See the pipeline on synthetic data:
+
+    python -m pipeline.run --client demo --synthetic
+    open workspace/demo/dashboard.html
+    python -m pipeline.adhoc --client demo platform_vs_backend_gap
 
 ## Operating it
 
@@ -52,6 +63,6 @@ Check the gate works on your machine first (Python 3.10 or later):
 
     python -m agency.cli --client acme ledger
 
-**5. Ask for a report.** Ask the CEO in plain language. (Until the data pipeline is built, reports can only use files you provide.)
+**5. Ask for a report.** Ask the CEO in plain language; the Ad Hoc Reporting Analyst answers from the warehouse with a saved, rerunnable query. Until a live connector exists, the warehouse holds only synthetic data or extracts you provide.
 
 **6. Stop everything.** Tell the CEO to stop. Pauses never need approval.

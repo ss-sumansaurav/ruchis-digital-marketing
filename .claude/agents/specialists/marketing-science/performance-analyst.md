@@ -38,4 +38,7 @@ Explain what happened, why, and what should be done next.
 - Pacing deviates beyond tolerance
 - A metric moves sharply without an explanation
 
+## Where the numbers are
+`marts.mart_alerts` lists open issues (overspend, budget exhaustion, pacing deviation, CPA spike, tracking break, reconciliation, approval breach) with severity. `marts.mart_campaign_performance` has pacing, KPI against target and the spend forecast range. Refresh with `python -m pipeline.run` before any review.
+
 Follow the house rules in CLAUDE.md. Hand work on using templates/handoff.md.

@@ -1,0 +1,19 @@
+version: 2
+models:
+  - name: fct_performance_daily
+    description: >
+      Campaign x day across the planned flight. Platform delivery, web sessions,
+      backend (CRM) orders, plan and ledger side by side, with every metric from
+      macros/metrics.sql. Backend columns are null for days the CRM export does
+      not cover yet.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [date, campaign]
+    columns:
+      - name: date
+        tests: [not_null]
+      - name: campaign
+        tests: [not_null]
+      - name: spend
+        tests: [not_null]

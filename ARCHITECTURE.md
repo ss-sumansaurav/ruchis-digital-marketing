@@ -10,7 +10,10 @@
 
 Reference: https://code.claude.com/docs/en/sub-agents
 
-This has not yet been run inside Claude Code. The agent files were checked for valid headers and unique names; the first real test is the dry run described under "Next".
+**Tested in Claude Code (2.1.287) on 2 Oct 2026.** Headless runs from this folder confirmed: the main session starts as the CEO, all agents in the subfolders load, and the CEO can delegate to the seven heads. Two findings:
+
+1. Nesting depth. Claude Code reads `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`; some environments set it to 1, which silently strips the Agent tool from the heads. `.claude/settings.json` now sets it to 2 (heads may delegate, specialists may not), and with that a head does get its Agent tool.
+2. **Open: the CEO's agent allowlist bounds the whole tree.** With the CEO restricted to `Agent(<the seven heads>, adhoc-reporting-analyst)`, a head's Agent tool offered only those same eight names, so `media-planner` came back "not found". Each head now names its own team (`Agent(media-planner, budget-forecasting-analyst)` and so on), but that was not enough on its own. The likely fix is to give the CEO an unrestricted `Agent` tool and keep "CEO delegates only to heads" as an instruction; that loosens a code-level control into an instruction, so it is the Principal's call, and it has not been run. To check on your machine after changing it: ask the CEO to have head-of-media-planning call media-planner and report what came back.
 
 ## Organisation
 
@@ -47,14 +50,24 @@ An approval with campaign `*` is an envelope: Ad Operations may launch and rebal
 
 **Limit you should know about.** In this dry-run setup the gate's state file sits on the same machine as the agents. The key stops an agent recording an approval through the gate, but it does not stop a process with file access from tampering with the state file directly. Before live use, the execution service must run as a separate service that alone holds the ad platform write credentials and its own state, out of the agents' reach. Agents then have no route to a platform except through it.
 
-## Data and reporting (planned, not built)
+## Data and reporting
 
-    ad platforms, web analytics, CRM
-        -> ingestion (dlt or Meltano), read-only credentials
-        -> warehouse (PostgreSQL, DuckDB or ClickHouse)
-        -> metric definitions (dbt Core)
-        -> dashboard (Apache Superset, Metabase open-source edition, or Grafana)
-        -> ad hoc reports (SQL on the marts, saved queries)
+    ad platforms, web analytics, CRM, media plan, approval gate state
+        -> extracts (today: pipeline/synth.py; live: dlt or Meltano, read-only credentials)
+        -> pipeline/ingest.py -> raw.* in DuckDB (state/<client>.duckdb)
+        -> dbt Core project in warehouse/: staging -> core.fct_performance_daily -> marts.*
+           every metric defined once in warehouse/macros/metrics.sql
+        -> pipeline/dashboard.py -> workspace/<client>/dashboard.html (interim, static)
+           hosted Superset / Metabase OSS / Grafana later, reading the same marts
+        -> pipeline/adhoc.py runs saved queries in reports/queries/ read-only
+
+One command runs it: `python -m pipeline.run --client <client> --synthetic` (dry run) or `--extracts <dir>`.
+
+Marts: exec overview, campaign performance (pacing, KPI against target, spend forecast range), channel performance and daily, funnel, approvals, reconciliation (platform spend against the ledger), alerts, freshness.
+
+Alert rules: overspend, budget exhaustion before flight end, pacing deviation beyond `pacing_tolerance_pct`, platform CPA spike (last 3 days against the 7 before, at least 20 conversions), tracking break (clicks but no sessions), reconciliation beyond `reconciliation_tolerance_pct`, approval breach (should be impossible; it checks the gate).
+
+Measurement honesty is built into the metric layer: platform-reported conversions and CRM ("backend") orders sit in separate columns, backend metrics divide only by spend on days the CRM export covers, and neither is labelled incremental. Incrementality needs experiments or MMM (still to build).
 
 Dashboard views: executive overview (budget, pacing, KPIs against target, forecast), channel and campaign performance, funnel, approvals, alerts. Every tile shows a data-as-of time, because ad platform reporting lags.
 
@@ -69,17 +82,18 @@ Other open-source candidates: Robyn, Meridian, PyMC-Marketing (media mix modelli
 | 3. Orchestration, shared workspace, logging | Partly: CEO agent, house rules, workspace layout, templates. Not yet exercised end to end |
 | 4. Approval gate and execution service | Done for dry run, 21 tests passing. Separate-service hardening pending |
 | 5. Budget ledger and reconciliation | Ledger done. Automated reconciliation against platforms pending |
-| 6. Data pipeline, warehouse, metric layer | Not started (needs hosting and platform access) |
-| 7. Dashboard and ad hoc reporting | Done in the agency console, on simulated data. The hosted open-source dashboard is not started |
+| 6. Data pipeline, warehouse, metric layer | Done on synthetic data: DuckDB + dbt Core 1.12, 23 dbt checks and 11 pipeline tests passing. Live connectors pending platform access |
+| 7. Dashboard and ad hoc reporting | Static warehouse dashboard and saved-query runner done on synthetic data; the agency console also has its own simulated view. Hosted open-source dashboard not started |
 | 8. Ad platform adapters | Simulated platform only |
 | 9. Operator guide | First version in README.md |
 | Full dry run on a sample brief | Runs end to end in the agency console. Tested with stand-in agent replies; quality of the real agents' output still needs your review |
 
 ## Next
-1. Run real briefs through the agency console and tune the agents where their output falls short.
-2. Build the data pipeline, warehouse and dashboard on synthetic data.
-3. Build the first live adapter, in read-only mode first.
+1. Settle the CEO allowlist question above, then run a sample brief through Claude Code end to end and tune the agents where their output falls short.
+2. Build the first live connector (read-only) writing the five extract shapes, starting with the first platform you choose.
+3. Add an experiment and MMM layer (GeoLift, Meridian or PyMC-Marketing) so incrementality has a home in the warehouse.
 4. Move the execution service to a separate service and add approval through your preferred channel.
+5. Stand up the hosted dashboard on the same marts.
 
 ## Needed from you
 - **Principal's name**, for `config/agency.yaml`.

@@ -40,4 +40,11 @@ Deliver complete, fresh, tested data to one warehouse so that every report agree
 - A source is stale or failing
 - Reconciliation is outside tolerance
 
+## Pipeline you own
+    python -m pipeline.run --client <client> --synthetic       # dry run on synthetic data
+    python -m pipeline.run --client <client> --extracts <dir>  # extracts written by a connector
+- `pipeline/ingest.py` loads five extracts (platform_daily, web_sessions, crm_orders, plan_daily, source_freshness) plus the gate's state into `raw.*`. A live connector must write the same shapes; see the column lists in `pipeline/synth.py`.
+- `warehouse/` is the dbt Core project: staging views, `core.fct_performance_daily`, and the marts. Metrics are defined once, in `warehouse/macros/metrics.sql`; never compute a metric anywhere else.
+- `python -m unittest tests.test_pipeline` must pass before you hand on.
+
 Follow the house rules in CLAUDE.md. Hand work on using templates/handoff.md.

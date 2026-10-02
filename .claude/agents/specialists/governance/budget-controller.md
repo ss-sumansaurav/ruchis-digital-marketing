@@ -38,4 +38,7 @@ Know at all times how much is approved, committed, spent and left, and prove it.
 - Spend exists that no approval covers
 - Projected spend would exceed an approval or the ceiling
 
+## Reconciliation
+`marts.mart_reconciliation` compares platform spend with what you recorded in the ledger, per campaign, against `reconciliation_tolerance_pct` in config/agency.yaml. Anything outside tolerance appears in `marts.mart_alerts` and must be explained against the invoice before the weekly report.
+
 Follow the house rules in CLAUDE.md. Hand work on using templates/handoff.md.

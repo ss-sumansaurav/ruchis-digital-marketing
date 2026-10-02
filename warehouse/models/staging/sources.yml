@@ -1,0 +1,23 @@
+version: 2
+sources:
+  - name: raw
+    schema: raw
+    description: Loaded as-is by pipeline/ingest.py. In dry run every row is synthetic.
+    tables:
+      - name: platform_daily
+        description: Ad platform delivery by campaign and day, as reported by the platform.
+      - name: web_sessions
+        description: Web analytics sessions by UTM campaign and day.
+      - name: crm_orders
+        description: Orders from the client's CRM or order system, with UTM campaign.
+      - name: plan_daily
+        description: The approved media plan, as planned spend by campaign and day.
+      - name: source_freshness
+        description: The latest complete day each source covers.
+      - name: gate_engagement
+      - name: gate_requests
+        description: Spend Approval Requests from the approval gate.
+      - name: gate_campaigns
+        description: Campaigns launched through the execution service.
+      - name: gate_spend
+        description: Spend recorded in the budget ledger by the Budget Controller.

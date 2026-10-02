@@ -1,0 +1,29 @@
+name: ruchi_warehouse
+version: "1.0.0"
+config-version: 2
+profile: ruchi_warehouse
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+# Tolerances mirror config/agency.yaml; pipeline/run.py passes the live values.
+vars:
+  pacing_tolerance_pct: 10
+  reconciliation_tolerance_pct: 2
+  cpa_spike_ratio: 1.3
+  cpa_spike_min_conversions: 20
+
+models:
+  ruchi_warehouse:
+    staging:
+      +materialized: view
+      +schema: staging
+    core:
+      +materialized: table
+      +schema: core
+    marts:
+      +materialized: table
+      +schema: marts
