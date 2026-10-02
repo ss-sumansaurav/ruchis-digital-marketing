@@ -13,7 +13,7 @@ Reference: https://code.claude.com/docs/en/sub-agents
 **Tested in Claude Code (2.1.287) on 2 Oct 2026.** Headless runs from this folder confirmed: the main session starts as the CEO, all agents in the subfolders load, and the CEO can delegate to the seven heads. Two findings:
 
 1. Nesting depth. Claude Code reads `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`; some environments set it to 1, which silently strips the Agent tool from the heads. `.claude/settings.json` now sets it to 2 (heads may delegate, specialists may not), and with that a head does get its Agent tool.
-2. **Open: the CEO's agent allowlist bounds the whole tree.** With the CEO restricted to `Agent(<the seven heads>, adhoc-reporting-analyst)`, a head's Agent tool offered only those same eight names, so `media-planner` came back "not found". Each head now names its own team (`Agent(media-planner, budget-forecasting-analyst)` and so on), but that was not enough on its own. The likely fix is to give the CEO an unrestricted `Agent` tool and keep "CEO delegates only to heads" as an instruction; that loosens a code-level control into an instruction, so it is the Principal's call, and it has not been run. To check on your machine after changing it: ask the CEO to have head-of-media-planning call media-planner and report what came back.
+2. The CEO's agent allowlist bounds the whole tree: with the CEO limited to the heads, a head's own Agent tool offered only those same names. With Suman's approval (2 Oct 2026) the CEO now has an unrestricted Agent tool and an instruction never to call specialists directly; each head's tool names only its own team. Verified the same day: CEO > head-of-media-planning > media-planner returned READY.
 
 ## Organisation
 
