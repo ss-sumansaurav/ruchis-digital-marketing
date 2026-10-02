@@ -67,7 +67,7 @@ One command runs it: `python -m pipeline.run --client <client> --synthetic` (dry
 
 Marts: exec overview, campaign performance (pacing, KPI against target, spend forecast range), channel performance and daily, funnel, approvals, reconciliation (platform spend against the ledger), alerts, freshness.
 
-Alert rules: overspend, budget exhaustion before flight end, pacing deviation beyond `pacing_tolerance_pct`, platform CPA spike (last 3 days against the 7 before, at least 20 conversions), tracking break (clicks but no sessions), reconciliation beyond `reconciliation_tolerance_pct`, approval breach (should be impossible; it checks the gate).
+Alert rules: unapproved spend (a campaign spending with no gate launch behind it, for example one set up directly in the platform), overspend, budget exhaustion before flight end, pacing deviation beyond `pacing_tolerance_pct`, platform CPA spike (last 3 days against the 7 before, at least 20 conversions), tracking break (clicks but no sessions), reconciliation beyond `reconciliation_tolerance_pct`, approval breach (should be impossible; it checks the gate).
 
 Measurement honesty is built into the metric layer: platform-reported conversions and CRM ("backend") orders sit in separate columns, backend metrics divide only by spend on days the CRM export covers, and neither is labelled incremental. Incrementality needs experiments or MMM (still to build).
 
@@ -86,13 +86,13 @@ Other open-source candidates: Robyn, Meridian, PyMC-Marketing (media mix modelli
 | 5. Budget ledger and reconciliation | Ledger done. Automated reconciliation against platforms pending |
 | 6. Data pipeline, warehouse, metric layer | Done on synthetic data: DuckDB + dbt Core 1.12, 23 dbt checks and 11 pipeline tests passing. Live connectors pending platform access |
 | 7. Dashboard and ad hoc reporting | Static warehouse dashboard and saved-query runner done on synthetic data; the agency console also has its own simulated view. Hosted open-source dashboard not started |
-| 8. Ad platform adapters | Simulated platform only |
+| 8. Ad platform adapters | Google Ads reporting connector (read-only, API v25) built and tested against recorded-shape responses; not yet run on a live account. Google Ads write adapter for the execution service not started. Other platforms simulated only |
 | 9. Operator guide | First version in README.md |
 | Full dry run on a sample brief | Runs end to end in the agency console. Tested with stand-in agent replies; quality of the real agents' output still needs your review |
 
 ## Next
 1. Settle the CEO allowlist question above, then run a sample brief through Claude Code end to end and tune the agents where their output falls short.
-2. Build the first live connector (read-only) writing the five extract shapes, starting with the first platform you choose.
+2. Run the Google Ads connector on a live account once credentials exist, then build the Google Ads write adapter behind the execution service (campaigns created paused, every spend call checked by the gate).
 3. Add an experiment and MMM layer (GeoLift, Meridian or PyMC-Marketing) so incrementality has a home in the warehouse.
 4. Move the execution service and the Telegram bot to a separate service, out of the agents' reach.
 5. Stand up the hosted dashboard on the same marts.
@@ -100,5 +100,5 @@ Other open-source candidates: Robyn, Meridian, PyMC-Marketing (media mix modelli
 ## Needed from you
 - **A Telegram bot token** from @BotFather, created by Ruchi, kept out of chats and set only in the bot's own environment.
 - **Hosting** for the warehouse and dashboard: your own machine or a cloud provider.
-- **Which ad platforms come first**, and API access to them: developer credentials, and account access from each client. Platform API approval can take time, so it is worth starting early.
+- **Google Ads API access** (chosen first): a developer token with Basic access from your manager account's API Center, an OAuth client in Google Cloud, and Read only access to each client account. Basic access needs Google's review, so it is worth applying early. Steps in README.
 - **Web analytics and CRM access** for the first client, if available.

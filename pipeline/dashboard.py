@@ -142,9 +142,12 @@ def build(db_path, out_path) -> Path:
         con.close()
 
     pa, ca = ov["platform_as_of"], ov["crm_as_of"]
-    asof = lambda d, what="Ad platforms": f"<div class='asof'>{what}, data to {d:%d %b %Y}</div>"
+    asof = lambda d, what="Ad platforms": (f"<div class='asof'>{what}, data to {d:%d %b %Y}</div>" if d
+                                           else f"<div class='asof'>{what}: no data connected yet</div>")
+    day = lambda d: f"{d:%d %b}" if d else "not connected"
     tile = lambda k, v, note: f"<div class='tile'><div class='k'>{k}</div><div class='v'>{v}</div>{note}</div>"
     synthetic = ov["is_synthetic"]
+    fs, fe = ov["flight_start"], ov["flight_end"]
 
     tiles = "".join([
         tile("Client ceiling", _money(ov["ceiling"]), "<div class='asof'>Approval gate, live</div>"),
@@ -191,8 +194,8 @@ def build(db_path, out_path) -> Path:
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>{_esc(ov['client'])} dashboard</title>
 <style>{CSS}</style></head><body><div class="wrap">
 <h1>{_esc(ov['client'])}: campaign dashboard</h1>
-<div class="muted small">Flight {ov['flight_start']:%d %b}–{ov['flight_end']:%d %b %Y} · currency {_esc(ov['currency'])} ·
-ad platform data to {pa:%d %b}, CRM data to {ca:%d %b}. Ad platforms report with a lag and restate conversions, so nothing here is live.</div>
+<div class="muted small">Flight {day(fs)}–{day(fe)} · currency {_esc(ov['currency'])} ·
+ad platform data to {day(pa)}, CRM data to {day(ca)}. Ad platforms report with a lag and restate conversions, so nothing here is live.</div>
 {banner}
 <div class="tiles">{tiles}</div>
 <div class="panel"><h2>Alerts</h2>{_table(['Severity', 'Rule', 'Campaign', 'Detail'], alert_rows) if alerts else '<p class="muted">No open alerts.</p>'}
@@ -201,10 +204,10 @@ ad platform data to {pa:%d %b}, CRM data to {ca:%d %b}. Ad platforms report with
 <div class="legend"><span><span class="sw"></span>Spend (ad platforms)</span><span><span class="sw p"></span>Plan</span></div>
 {_spend_chart(pts)}{asof(pa)}</div>
 <div class="panel"><h2>Channels</h2>{_table(['Channel', 'Budget', 'Spend', 'Pacing', 'CPM', 'CTR', 'CPC', 'CVR', 'CPA platform', 'CPA backend', 'ROAS platform', 'ROAS backend', 'CAC'], chan_rows)}
-<div class="asof">Platform figures to {pa:%d %b}; backend (CRM, last-touch UTM) to {ca:%d %b}. Platform conversions over-claim; neither column is incremental.</div></div>
+<div class="asof">Platform figures to {day(pa)}; backend (CRM, last-touch UTM) to {day(ca)}. Platform conversions over-claim; neither column is incremental.</div></div>
 <div class="panel"><h2>Campaigns</h2>{_table(['Campaign', 'Channel', 'Budget', 'Spend', 'Pacing', 'Impr.', 'Clicks', 'CTR', 'CPC', 'CPA platform', 'CPA backend', 'KPI actual / target', 'Forecast spend'], camp_rows)}{asof(pa)}</div>
 <div class="panel"><h2>Funnel</h2>{_table(['Level', 'Impressions', 'Clicks', 'Sessions', 'Orders', 'Revenue', 'CTR', 'Click to session', 'CVR', 'CPA', 'ROAS', 'CAC'], fun_rows)}
-<div class="asof">Window both web analytics and CRM cover: to {ca:%d %b}. Orders and revenue from CRM.</div></div>
+<div class="asof">Window both web analytics and CRM cover: to {day(ca)}. Orders and revenue from CRM.</div></div>
 <div class="panel"><h2>Approvals</h2>{_table(['Request', 'Channel', 'Status', 'Approved', 'Daily cap', 'Dates', 'Committed', 'Spent', 'Used', 'Remaining'], appr_rows)}{asof(pa, 'Gate live; spend from ad platforms')}</div>
 <div class="panel"><h2>Spend reconciliation</h2>{_table(['Campaign', 'Platform spend', 'Ledger spend', 'Difference', 'Difference %', 'Status'], rec_rows)}{asof(pa)}</div>
 <div class="panel"><h2>Data freshness</h2>{_table(['Source', 'Data to', 'Loaded', 'Type'], fresh_rows)}</div>

@@ -63,6 +63,13 @@ recon as (
            difference_pct, {{ var('reconciliation_tolerance_pct') }} / 100.0
     from {{ ref('mart_reconciliation') }} where not within_tolerance
 ),
+unapproved as (
+    select 'unapproved_spend', 'act', campaign, channel,
+           'Spend of ' || round(spend)::varchar || ' on a campaign the execution service never launched, so no approval covers it. '
+           || 'If it was set up directly in the platform, pause it and raise a Spend Approval Request; if it is ours, add it to the campaign map.',
+           spend, 0
+    from c where request_id is null and spend > 0
+),
 approval_breach as (
     select 'approval_breach', 'act', request_id, channel,
            'Committed or live daily budget is above what ' || request_id || ' approved. The gate should make this impossible: investigate.',
@@ -73,5 +80,5 @@ approval_breach as (
 select a.*, ref_date.d as data_as_of
 from (
     select * from overspend union all select * from exhaustion union all select * from pacing union all select * from cpa_spike
-    union all select * from tracking union all select * from recon union all select * from approval_breach
+    union all select * from tracking union all select * from recon union all select * from unapproved union all select * from approval_breach
 ) a(rule, severity, campaign, channel, detail, value, threshold), ref_date

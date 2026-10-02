@@ -16,7 +16,18 @@ from pathlib import Path
 
 import duckdb
 
-EXTRACTS = ("platform_daily", "web_sessions", "crm_orders", "plan_daily", "source_freshness")
+EXTRACTS = {  # name -> columns, used when a source has no extract yet (for example no CRM access)
+    "platform_daily": ("source varchar, date date, campaign varchar, channel varchar, impressions bigint, "
+                       "clicks bigint, spend double, platform_conversions double, platform_revenue double, "
+                       "is_synthetic boolean"),
+    "web_sessions": ("date date, utm_source varchar, utm_medium varchar, utm_campaign varchar, sessions bigint, "
+                     "is_synthetic boolean"),
+    "crm_orders": ("order_id varchar, order_date date, utm_campaign varchar, revenue double, new_customer boolean, "
+                   "is_synthetic boolean"),
+    "plan_daily": ("date date, campaign varchar, channel varchar, planned_spend double, kpi varchar, "
+                   "kpi_target double, is_synthetic boolean"),
+    "source_freshness": "source varchar, data_as_of date, is_synthetic boolean",
+}
 # Column types for gate tables, so an engagement with no campaigns or spend yet still loads.
 GATE_SCHEMAS = {
     "gate_engagement": "client varchar, currency varchar, ceiling double",
@@ -37,11 +48,15 @@ def load(db_path, extract_dir, state_path) -> dict:
     con = duckdb.connect(str(db_path))
     try:
         con.execute("create schema if not exists raw")
-        for name in EXTRACTS:
+        for name, columns in EXTRACTS.items():
             src = extract_dir / f"{name}.csv"
-            con.execute(f"create or replace table raw.{name} as "
-                        f"select *, ?::timestamp as _loaded_at from read_csv_auto(?, header=true)",
-                        [loaded_at, str(src)])
+            if src.exists():
+                types = dict(c.rsplit(" ", 1) for c in columns.split(", "))
+                con.execute(f"create or replace table raw.{name} as "
+                            f"select *, ?::timestamp as _loaded_at from read_csv(?, header=true, columns=?)",
+                            [loaded_at, str(src), types])
+            else:
+                con.execute(f"create or replace table raw.{name} ({columns}, _loaded_at timestamp)")
             counts[name] = con.execute(f"select count(*) from raw.{name}").fetchone()[0]
 
         state = json.loads(state_path.read_text())

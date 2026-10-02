@@ -20,7 +20,7 @@ The data pipeline (DuckDB warehouse, dbt Core metric layer, dashboard and ad hoc
 | `pipeline/` | Ingestion, synthetic data, dashboard and ad hoc report runner |
 | `warehouse/` | dbt Core project: staging, core fact table, marts, metric definitions |
 | `reports/queries/` | Saved ad hoc queries |
-| `tests/` | 21 gate tests (unapproved or out-of-scope spend is blocked), 17 Telegram approval tests and 11 pipeline tests |
+| `tests/` | 21 gate tests (unapproved or out-of-scope spend is blocked), 17 Telegram approval tests, 11 pipeline tests and 9 Google Ads connector tests |
 | `templates/` | Client brief, Spend Approval Request, handoff |
 | `config/agency.yaml` | Setup values, including the ones still to confirm |
 | `ARCHITECTURE.md` | Design, build status, what is needed from you |
@@ -72,6 +72,21 @@ From then on, every Spend Approval Request arrives on Telegram as one screen wit
 
     python -m agency.cli --client acme ledger
 
-**6. Ask for a report.** Ask the CEO in plain language; the Ad Hoc Reporting Analyst answers from the warehouse with a saved, rerunnable query. Until a live connector exists, the warehouse holds only synthetic data or extracts you provide.
+**6. Connect Google Ads (read-only reporting).** One-time setup, all done in your own Google accounts:
 
-**7. Stop everything.** Tell the CEO to stop. Pauses never need approval.
+1. In a Google Ads manager account, open Admin > API Center and request a developer token. It starts at test access, which only works on test accounts; apply for Basic access, which Google reviews.
+2. In Google Cloud, create a project, enable the Google Ads API, and create an OAuth client (Desktop app).
+3. Give a Google user **Read only** access to each client's Google Ads account (or link the accounts to your manager account), then create a refresh token signed in as that user.
+4. Set `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_REFRESH_TOKEN` (and `GOOGLE_ADS_LOGIN_CUSTOMER_ID` for a manager account) in the environment that runs the pipeline. Never paste them into a chat.
+
+Then pull the last 30 days and rebuild the warehouse:
+
+    python -m pipeline.connectors.google_ads --client acme --customer-id 123-456-7890 \
+        --campaign-map workspace/acme/google-ads-campaigns.json --out state/pipeline/acme/extracts
+    python -m pipeline.run --client acme --extracts state/pipeline/acme/extracts
+
+The campaign map is a JSON object from Google Ads campaign id to the campaign name used in the approval gate. Any campaign spending without an approval behind it shows up as an `unapproved_spend` alert. The connector only reads; launching and budget changes on Google Ads are not built yet and will go only through the approval gate.
+
+**7. Ask for a report.** Ask the CEO in plain language; the Ad Hoc Reporting Analyst answers from the warehouse with a saved, rerunnable query. Until a live connector exists, the warehouse holds only synthetic data or extracts you provide.
+
+**8. Stop everything.** Tell the CEO to stop. Pauses never need approval.
