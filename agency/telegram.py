@@ -240,7 +240,9 @@ def from_env(state_dir, dry_run: bool) -> ApprovalBot:
     only ad spend is simulated). Without a token, a dry run records messages instead."""
     secret = os.environ.get("RUCHI_APPROVAL_SECRET", "")
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
-    if token and secret:
+    if token:
+        # Without the secret the bot still answers /start (so the approver can read their ids
+        # before binding) but every decision is refused, because no secret matches.
         return ApprovalBot(state_dir, TelegramAPI(token), secret, dry_run=dry_run)
     if dry_run:
         return ApprovalBot(state_dir, FakeAPI(), secret, dry_run=True)
