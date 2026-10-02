@@ -53,10 +53,10 @@ See the pipeline on synthetic data:
 
 **2. Give the CEO a brief.** In Claude Code, paste the client's brief and budget. The CEO runs intake, strategy and planning, and reports to you at each stage.
 
-**3. Set up Telegram approvals** (once):
+**3. Set up Telegram approvals** (once). Requests go to Suman's Telegram account; binding it needs the Principal's approval key:
 
 1. In Telegram, open @BotFather, send `/newbot` and keep the token it gives you.
-2. Start the bot in its own terminal, outside the agents' folder access: `TELEGRAM_BOT_TOKEN=<token> python -m agency.cli --client acme telegram-bot`. Send it `/start`; it replies with your user id and chat id.
+2. Start the bot in its own terminal, outside the agents' folder access: `TELEGRAM_BOT_TOKEN=<token> python -m agency.cli --client acme telegram-bot`. From Suman's Telegram, send it `/start`; it replies with the user id and chat id.
 3. Bind your account with your approval key: `python -m agency.cli --client acme bind-telegram --user-id <id> --chat-id <id>`. It prints a secret once.
 4. Restart the bot with both values: `TELEGRAM_BOT_TOKEN=<token> RUCHI_APPROVAL_SECRET=<secret> python -m agency.cli --client acme telegram-bot`.
 

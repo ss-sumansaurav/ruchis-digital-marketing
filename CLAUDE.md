@@ -9,7 +9,7 @@ Spend-affecting actions: launching or unpausing a campaign, raising a budget or 
 
 Pausing a campaign or reducing a budget never needs approval. Do it at once when warranted and tell the CEO.
 
-The gate is enforced in code by `agency/`. The Principal is Ruchi. She decides on Telegram (the approval bot, `agency/telegram.py`) or in the terminal. Only she holds the approval key, and only the bot process holds the Telegram token and approval secret. No agent may ask for it, store it, or try to work around a block. A blocked action is reported up, not retried a different way.
+The gate is enforced in code by `agency/`. The Principal is Ruchi. Spend decisions are made on Suman's Telegram account (the approval bot, `agency/telegram.py`), which Ruchi binds with her key, or in the terminal with the key. Only the Principal holds the approval key, and only the bot process holds the Telegram token and approval secret. No agent may ask for it, store it, or try to work around a block. A blocked action is reported up, not retried a different way.
 
 ## 2. The client budget is a hard ceiling
 Never plan, request or commit spend beyond it. Fees and tool costs count if the client budget covers them.
