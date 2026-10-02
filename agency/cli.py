@@ -95,12 +95,17 @@ def main(argv=None):
             print("It is shown once and must never be given to an agent:")
             print(secret)
         elif a.cmd == "telegram-bot":
+            import os
             from .telegram import from_env
+            if not a.once and not os.environ.get("TELEGRAM_BOT_TOKEN"):
+                sys.exit("TELEGRAM_BOT_TOKEN is not loaded in this terminal window. Run "
+                         "`read -rs TELEGRAM_BOT_TOKEN && export TELEGRAM_BOT_TOKEN`, paste the token, press Enter, "
+                         "then start the bot again in the same window.")
             bot = from_env(a.state_dir, dry_run=_mode() != "live")
             if a.once:
                 out(bot.send_pending())
             else:
-                print("approval bot running; Ctrl+C to stop"); bot.poll()
+                bot.poll()
         elif a.cmd == "record-spend":
             eng.record_spend(a.campaign, a.amount, a.date); print("recorded")
     except SpendBlocked as e:

@@ -24,6 +24,7 @@ import json
 import os
 import re
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -40,12 +41,22 @@ class TelegramAPI:
         self.token = token
 
     def call(self, method: str, **params) -> dict:
+        params = {k: v for k, v in params.items() if v is not None}
         req = urllib.request.Request(API.format(token=self.token, method=method),
                                      data=json.dumps(params).encode(),
                                      headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=params.get("timeout", 0) + 15) as resp:
-            body = json.loads(resp.read())
+        try:
+            with urllib.request.urlopen(req, timeout=params.get("timeout", 0) + 15) as resp:
+                body = json.loads(resp.read())
+        except urllib.error.HTTPError as e:   # Telegram explains errors in a JSON body
+            try:
+                body = json.loads(e.read())
+            except ValueError:
+                body = {"ok": False, "error_code": e.code, "description": e.reason}
         if not body.get("ok"):
+            if body.get("error_code") == 401:
+                raise SystemExit("Telegram rejected the bot token (401 Unauthorized). "
+                                 "Load the newest token from @BotFather and start again.")
             raise RuntimeError(f"Telegram {method} failed: {body.get('description')}")
         return body["result"]
 
@@ -225,13 +236,27 @@ class ApprovalBot:
         return sent
 
     def poll(self, interval: float = 1.0):  # pragma: no cover - needs a live bot
+        me = self.api.call("getMe")
+        print(f"approval bot @{me.get('username')} is running. Send it /start from Telegram. Ctrl+C to stop.",
+              flush=True)
+        # A webhook left on the bot makes getUpdates fail; this bot only uses polling.
+        self.api.call("deleteWebhook", drop_pending_updates=False)
+        if not self.secret:
+            print("No RUCHI_APPROVAL_SECRET loaded yet: /start works, decisions are refused.", flush=True)
         offset = None
         while True:
-            self.send_pending()
-            for upd in self.api.call("getUpdates", timeout=20, offset=offset,
-                                     allowed_updates=["message", "callback_query"]):
-                offset = upd["update_id"] + 1
-                self.handle(upd)
+            try:
+                for sent in self.send_pending():
+                    print(f"sent {sent} to Telegram", flush=True)
+                for upd in self.api.call("getUpdates", timeout=20, offset=offset,
+                                         allowed_updates=["message", "callback_query"]):
+                    offset = upd["update_id"] + 1
+                    who = (upd.get("message") or upd.get("callback_query") or {}).get("from", {}).get("id")
+                    result = self.handle(upd)
+                    print(f"from user {who}: {result or 'ignored'}", flush=True)
+            except (OSError, RuntimeError, ApprovalError, ValueError) as e:
+                print(f"error, retrying: {e}", flush=True)
+                time.sleep(5)
             time.sleep(interval)
 
 
@@ -240,7 +265,9 @@ def from_env(state_dir, dry_run: bool) -> ApprovalBot:
     only ad spend is simulated). Without a token, a dry run records messages instead."""
     secret = os.environ.get("RUCHI_APPROVAL_SECRET", "")
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
-    if token and secret:
+    if token:
+        # Without the secret the bot still answers /start (so the approver can read their ids
+        # before binding) but every decision is refused, because no secret matches.
         return ApprovalBot(state_dir, TelegramAPI(token), secret, dry_run=dry_run)
     if dry_run:
         return ApprovalBot(state_dir, FakeAPI(), secret, dry_run=True)

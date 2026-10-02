@@ -53,12 +53,12 @@ See the pipeline on synthetic data:
 
 **2. Give the CEO a brief.** In Claude Code, paste the client's brief and budget. The CEO runs intake, strategy and planning, and reports to you at each stage.
 
-**3. Set up Telegram approvals** (once):
+**3. Set up Telegram approvals** (once). Requests go to Suman's Telegram account; binding it needs the Principal's approval key:
 
 1. In Telegram, open @BotFather, send `/newbot` and keep the token it gives you.
-2. Start the bot in its own terminal, outside the agents' folder access: `TELEGRAM_BOT_TOKEN=<token> python -m agency.cli --client acme telegram-bot`. Send it `/start`; it replies with your user id and chat id.
+2. Start the bot in its own terminal, outside the agents' folder access. Load the token without it landing in your shell history: `read -rs TELEGRAM_BOT_TOKEN && export TELEGRAM_BOT_TOKEN` (paste, then Enter), then `python -m agency.cli --client acme telegram-bot`. From Suman's Telegram, send it `/start`; it replies with the user id and chat id.
 3. Bind your account with your approval key: `python -m agency.cli --client acme bind-telegram --user-id <id> --chat-id <id>`. It prints a secret once.
-4. Restart the bot with both values: `TELEGRAM_BOT_TOKEN=<token> RUCHI_APPROVAL_SECRET=<secret> python -m agency.cli --client acme telegram-bot`.
+4. Load the secret the same way (`read -rs RUCHI_APPROVAL_SECRET && export RUCHI_APPROVAL_SECRET`) and restart the bot: `python -m agency.cli --client acme telegram-bot`.
 
 From then on, every Spend Approval Request arrives on Telegram as one screen with APPROVE and REJECT buttons. Reply `MODIFY SAR-0001 150000 6000` to approve a lower amount or daily cap, or `REJECT SAR-0001 reason`. Only your Telegram account can decide; anyone else's taps are refused and logged. From Telegram you can only lower a request, never raise it. Never share the token, the secret or your key with an agent.
 

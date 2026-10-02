@@ -132,6 +132,13 @@ class TelegramTests(unittest.TestCase):
     def test_start_tells_ruchi_her_ids(self):
         self.assertIn(str(RUCHI), self.say("/start"))
 
+    def test_a_bot_without_the_secret_answers_start_but_cannot_decide(self):
+        unbound = ApprovalBot(self.state, FakeAPI(), "")
+        self.assertIn(str(RUCHI), unbound.handle({"message": {"text": "/start", "from": {"id": RUCHI}, "chat": {"id": CHAT}}}))
+        self.bot.send_pending()
+        unbound.handle({"callback_query": {"id": "q", "from": {"id": RUCHI}, "data": self.sent_buttons()["APPROVE"]}})
+        self.assertEqual(self.fresh()["status"], "PENDING")
+
     def test_decisions_are_audited_with_the_channel(self):
         self.bot.send_pending()
         self.press(self.sent_buttons()["APPROVE"], user=STRANGER)

@@ -5,6 +5,7 @@ default_currency: INR         # confirmed
 default_market: India         # confirmed
 runtime: claude-code          # ASSUMED: see ARCHITECTURE.md for why
 approval_channel: telegram    # confirmed; terminal approval still works. See agency/telegram.py
+approval_telegram_account: Suman   # requests go to Suman's Telegram (confirmed 2 Oct 2026)
 hosting: local                # ASSUMED: for the data stack and dashboard
 mode: dry_run                 # dry_run | live. Live adapters are not built yet
 pacing_tolerance_pct: 10      # ASSUMED: deviation from plan that triggers an alert
