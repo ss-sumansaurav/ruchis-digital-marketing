@@ -48,6 +48,8 @@ What the code enforces (`agency/core.py`, proven by `tests/test_gate.py`):
 
 An approval with campaign `*` is an envelope: Ad Operations may launch and rebalance several campaigns under it, as long as the total and the daily cap hold. Moving money between two approvals (for example between channels) always needs a new request; a reallocation tolerance is not implemented yet.
 
+**Telegram approvals** (`agency/telegram.py`). Agents only create requests. A separate bot process sends each pending request to Ruchi's bound Telegram chat with APPROVE and REJECT buttons, and records her decision through the gate. A decision counts only if it comes from her Telegram user id, carries the bot's approval secret (issued once when she binds the account with her key) and matches the one-time nonce of the message sent for that request. From Telegram, MODIFY can only lower a request. Proven by `tests/test_telegram.py` (17 tests). The bot uses long polling, so it runs on a laptop or small server with no public address. The risk to weigh: anyone holding her unlocked phone can approve, so turn on Telegram's passcode lock and two-step verification.
+
 **Limit you should know about.** In this dry-run setup the gate's state file sits on the same machine as the agents. The key stops an agent recording an approval through the gate, but it does not stop a process with file access from tampering with the state file directly. Before live use, the execution service must run as a separate service that alone holds the ad platform write credentials and its own state, out of the agents' reach. Agents then have no route to a platform except through it.
 
 ## Data and reporting
@@ -80,7 +82,7 @@ Other open-source candidates: Robyn, Meridian, PyMC-Marketing (media mix modelli
 | 1. Architecture note | Done (this file) |
 | 2. Agent definitions | Done: 34 agents. Not yet run in Claude Code |
 | 3. Orchestration, shared workspace, logging | Partly: CEO agent, house rules, workspace layout, templates. Not yet exercised end to end |
-| 4. Approval gate and execution service | Done for dry run, 21 tests passing. Separate-service hardening pending |
+| 4. Approval gate and execution service | Done for dry run, 21 tests passing. Telegram approvals for Ruchi added, 17 tests. Separate-service hardening pending |
 | 5. Budget ledger and reconciliation | Ledger done. Automated reconciliation against platforms pending |
 | 6. Data pipeline, warehouse, metric layer | Done on synthetic data: DuckDB + dbt Core 1.12, 23 dbt checks and 11 pipeline tests passing. Live connectors pending platform access |
 | 7. Dashboard and ad hoc reporting | Static warehouse dashboard and saved-query runner done on synthetic data; the agency console also has its own simulated view. Hosted open-source dashboard not started |
@@ -92,13 +94,11 @@ Other open-source candidates: Robyn, Meridian, PyMC-Marketing (media mix modelli
 1. Settle the CEO allowlist question above, then run a sample brief through Claude Code end to end and tune the agents where their output falls short.
 2. Build the first live connector (read-only) writing the five extract shapes, starting with the first platform you choose.
 3. Add an experiment and MMM layer (GeoLift, Meridian or PyMC-Marketing) so incrementality has a home in the warehouse.
-4. Move the execution service to a separate service and add approval through your preferred channel.
+4. Move the execution service and the Telegram bot to a separate service, out of the agents' reach.
 5. Stand up the hosted dashboard on the same marts.
 
 ## Needed from you
-- **Principal's name**, for `config/agency.yaml`.
-- **Currency and market.** INR and India are assumed.
-- **Where approval requests should reach you** after the terminal phase: chat, email, Slack or other.
+- **A Telegram bot token** from @BotFather, created by Ruchi, kept out of chats and set only in the bot's own environment.
 - **Hosting** for the warehouse and dashboard: your own machine or a cloud provider.
 - **Which ad platforms come first**, and API access to them: developer credentials, and account access from each client. Platform API approval can take time, so it is worth starting early.
 - **Web analytics and CRM access** for the first client, if available.

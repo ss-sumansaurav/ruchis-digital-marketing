@@ -108,7 +108,8 @@ class Engagement:
                           if r["status"] == "APPROVED"))
 
     def create_request(self, *, campaign: str, channel: str, amount: float, start, end,
-                       daily_cap: float, summary: str, requested_by: str = "ceo") -> str:
+                       daily_cap: float, summary: str, requested_by: str = "ceo",
+                       detail: dict | None = None) -> str:
         amount, daily_cap = _money(amount), _money(daily_cap)
         if amount <= 0 or daily_cap <= 0:
             raise ApprovalError("amount and daily cap must be positive")
@@ -124,18 +125,14 @@ class Engagement:
             "id": rid, "campaign": campaign, "channel": channel, "amount": amount,
             "start": str(_d(start)), "end": str(_d(end)), "daily_cap": daily_cap,
             "summary": summary, "requested_by": requested_by, "requested_at": _now(),
-            "status": "PENDING", "approved_amount": 0.0, "decided_at": None, "note": ""}
+            "status": "PENDING", "approved_amount": 0.0, "decided_at": None, "note": "",
+            "detail": detail or {}}
         self._save()
         self._log(requested_by, "request_created", request_id=rid, amount=amount,
                   channel=channel, campaign=campaign)
         return rid
 
-    def _decide(self, rid: str, key: str) -> dict:
-        if not self.data["key"]:
-            raise ApprovalError("no Principal key set; run set-key first")
-        if not self._key_ok(key):
-            self._log("unknown", "decision_refused_bad_key", request_id=rid)
-            raise ApprovalError("wrong Principal key")
+    def _pending(self, rid: str) -> dict:
         req = self.data["requests"].get(rid)
         if not req:
             raise ApprovalError(f"no such request {rid}")
@@ -143,13 +140,26 @@ class Engagement:
             raise ApprovalError(f"{rid} is already {req['status']}")
         return req
 
-    def approve(self, rid: str, key: str, *, amount: float | None = None,
-                daily_cap: float | None = None, note: str = ""):
-        """Approve as requested, or MODIFY by passing a different amount or daily cap."""
-        req = self._decide(rid, key)
+    def _decide(self, rid: str, key: str) -> dict:
+        if not self.data["key"]:
+            raise ApprovalError("no Principal key set; run set-key first")
+        if not self._key_ok(key):
+            self._log("unknown", "decision_refused_bad_key", request_id=rid)
+            raise ApprovalError("wrong Principal key")
+        return self._pending(rid)
+
+    def _record_approval(self, req: dict, actor: str, amount, daily_cap, note: str,
+                         allow_increase: bool = True, **detail):
         approved = _money(amount if amount is not None else req["amount"])
         if approved <= 0:
             raise ApprovalError("approved amount must be positive")
+        if daily_cap is not None and _money(daily_cap) <= 0:
+            raise ApprovalError("approved daily cap must be positive")
+        # From a chat channel, MODIFY can only lower a request: a typo should never over-approve.
+        if not allow_increase and (approved > req["amount"] or
+                                   (daily_cap is not None and _money(daily_cap) > req["daily_cap"])):
+            raise ApprovalError("from a chat, an approval can only lower the amount or daily cap; "
+                                "raise a new request or use the terminal")
         if self.approved_total() + approved > self.data["ceiling"]:
             raise ApprovalError("approval would exceed the client ceiling")
         modified = approved != req["amount"] or (daily_cap is not None and _money(daily_cap) != req["daily_cap"])
@@ -157,14 +167,74 @@ class Engagement:
             req["daily_cap"] = _money(daily_cap)
         req.update(status="APPROVED", approved_amount=approved, decided_at=_now(), note=note)
         self._save()
-        self._log("principal", "request_modified_and_approved" if modified else "request_approved",
-                  request_id=rid, approved_amount=approved, daily_cap=req["daily_cap"])
+        self._log(actor, "request_modified_and_approved" if modified else "request_approved",
+                  request_id=req["id"], approved_amount=approved, daily_cap=req["daily_cap"], **detail)
+
+    def approve(self, rid: str, key: str, *, amount: float | None = None,
+                daily_cap: float | None = None, note: str = ""):
+        """Approve as requested, or MODIFY by passing a lower amount or daily cap."""
+        self._record_approval(self._decide(rid, key), "principal", amount, daily_cap, note)
 
     def reject(self, rid: str, key: str, note: str = ""):
         req = self._decide(rid, key)
         req.update(status="REJECTED", decided_at=_now(), note=note)
         self._save()
         self._log("principal", "request_rejected", request_id=rid, note=note)
+
+    # -------------------------------------------------- approval channels
+    def bind_channel(self, key: str, channel: str, user_id: int, chat_id: int) -> str:
+        """The Principal links one chat account (for example Telegram) to approvals.
+
+        Returns a secret shown once. Only the approval bot holds it; with it, the
+        bot may record decisions made by that one user id, for requests it has
+        issued a nonce for. Re-binding replaces the old secret.
+        """
+        if not self._key_ok(key):
+            self._log("unknown", "bind_refused_bad_key", channel=channel)
+            raise ApprovalError("wrong Principal key")
+        secret, salt = secrets.token_urlsafe(32), secrets.token_hex(16)
+        self.data.setdefault("channels", {})[channel] = {
+            "user_id": int(user_id), "chat_id": int(chat_id), "salt": salt, "hash": _hash(secret, salt)}
+        self._save()
+        self._log("principal", "channel_bound", channel=channel, user_id=int(user_id))
+        return secret
+
+    def channel(self, name: str) -> dict | None:
+        return self.data.get("channels", {}).get(name)
+
+    def issue_nonce(self, rid: str, channel: str) -> str:
+        """A one-time value tying a sent approval message to one pending request."""
+        req = self._pending(rid)
+        nonce = secrets.token_hex(4)
+        req.setdefault("nonces", {})[channel] = nonce
+        self._save()
+        return nonce
+
+    def _via(self, rid: str, channel: str, user_id: int, secret: str, nonce: str) -> dict:
+        bound = self.channel(channel)
+        ok = (bound and int(user_id) == bound["user_id"]
+              and hmac.compare_digest(_hash(secret, bound["salt"]), bound["hash"]))
+        if not ok:
+            self._log(f"{channel}:{user_id}", "decision_refused_channel_auth", request_id=rid)
+            raise ApprovalError("this account is not authorised to decide on spend")
+        req = self._pending(rid)
+        if not hmac.compare_digest(str(req.get("nonces", {}).get(channel, "")), str(nonce)) or not nonce:
+            self._log(f"{channel}:{user_id}", "decision_refused_stale_message", request_id=rid)
+            raise ApprovalError("this approval message is out of date; ask for it to be resent")
+        req["nonces"].pop(channel)
+        return req
+
+    def approve_via(self, rid: str, channel: str, user_id: int, secret: str, nonce: str, *,
+                    amount: float | None = None, daily_cap: float | None = None, note: str = ""):
+        req = self._via(rid, channel, user_id, secret, nonce)
+        self._record_approval(req, "principal", amount, daily_cap, note, allow_increase=False,
+                              via=channel, user_id=int(user_id))
+
+    def reject_via(self, rid: str, channel: str, user_id: int, secret: str, nonce: str, note: str = ""):
+        req = self._via(rid, channel, user_id, secret, nonce)
+        req.update(status="REJECTED", decided_at=_now(), note=note)
+        self._save()
+        self._log("principal", "request_rejected", request_id=rid, note=note, via=channel, user_id=int(user_id))
 
     # ------------------------------------------------------------- gate
     def _under(self, rid: str, excluding: str | None = None):

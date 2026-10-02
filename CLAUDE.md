@@ -9,7 +9,7 @@ Spend-affecting actions: launching or unpausing a campaign, raising a budget or 
 
 Pausing a campaign or reducing a budget never needs approval. Do it at once when warranted and tell the CEO.
 
-The gate is enforced in code by `agency/`. Only the Principal holds the approval key. No agent may ask for it, store it, or try to work around a block. A blocked action is reported up, not retried a different way.
+The gate is enforced in code by `agency/`. The Principal is Ruchi. She decides on Telegram (the approval bot, `agency/telegram.py`) or in the terminal. Only she holds the approval key, and only the bot process holds the Telegram token and approval secret. No agent may ask for it, store it, or try to work around a block. A blocked action is reported up, not retried a different way.
 
 ## 2. The client budget is a hard ceiling
 Never plan, request or commit spend beyond it. Fees and tool costs count if the client budget covers them.
@@ -48,7 +48,7 @@ Read what is already there before starting. Write your output to the file your t
     python -m agency.cli --client <client> request ...        (CEO)
     python -m agency.cli --client <client> execute ...        (Ad Operations)
     python -m agency.cli --client <client> record-spend ...   (Budget Controller)
-`approve`, `reject` and `set-key` are for the Principal only.
+`approve`, `reject`, `set-key` and `bind-telegram` are for the Principal only. `telegram-bot` runs as its own process, outside the agents' reach.
 
 ## Mode
 The agency runs in dry-run mode: the execution service talks to a mock ad platform and no real money can move. Say so whenever you report a launch or a result.

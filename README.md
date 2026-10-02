@@ -16,11 +16,11 @@ The data pipeline (DuckDB warehouse, dbt Core metric layer, dashboard and ad hoc
 | `app/agency-console.html` | The agency console: runs the whole workflow in dry run inside Claude |
 | `.claude/agents/` | The agents: `ceo.md`, 7 department heads, 26 specialists |
 | `CLAUDE.md` | House rules every agent works under |
-| `agency/` | Approval gate, budget ledger, execution service (Python, no dependencies) |
+| `agency/` | Approval gate, budget ledger, execution service, Telegram approval bot (Python, no dependencies) |
 | `pipeline/` | Ingestion, synthetic data, dashboard and ad hoc report runner |
 | `warehouse/` | dbt Core project: staging, core fact table, marts, metric definitions |
 | `reports/queries/` | Saved ad hoc queries |
-| `tests/` | 21 gate tests (unapproved or out-of-scope spend is blocked) and 11 pipeline tests |
+| `tests/` | 21 gate tests (unapproved or out-of-scope spend is blocked), 17 Telegram approval tests and 11 pipeline tests |
 | `templates/` | Client brief, Spend Approval Request, handoff |
 | `config/agency.yaml` | Setup values, including the ones still to confirm |
 | `ARCHITECTURE.md` | Design, build status, what is needed from you |
@@ -53,16 +53,25 @@ See the pipeline on synthetic data:
 
 **2. Give the CEO a brief.** In Claude Code, paste the client's brief and budget. The CEO runs intake, strategy and planning, and reports to you at each stage.
 
-**3. Approve or reject spend.** The CEO shows you a Spend Approval Request with an ID. In a separate terminal:
+**3. Set up Telegram approvals** (once):
+
+1. In Telegram, open @BotFather, send `/newbot` and keep the token it gives you.
+2. Start the bot in its own terminal, outside the agents' folder access: `TELEGRAM_BOT_TOKEN=<token> python -m agency.cli --client acme telegram-bot`. Send it `/start`; it replies with your user id and chat id.
+3. Bind your account with your approval key: `python -m agency.cli --client acme bind-telegram --user-id <id> --chat-id <id>`. It prints a secret once.
+4. Restart the bot with both values: `TELEGRAM_BOT_TOKEN=<token> RUCHI_APPROVAL_SECRET=<secret> python -m agency.cli --client acme telegram-bot`.
+
+From then on, every Spend Approval Request arrives on Telegram as one screen with APPROVE and REJECT buttons. Reply `MODIFY SAR-0001 150000 6000` to approve a lower amount or daily cap, or `REJECT SAR-0001 reason`. Only your Telegram account can decide; anyone else's taps are refused and logged. From Telegram you can only lower a request, never raise it. Never share the token, the secret or your key with an agent.
+
+**4. Approve or reject spend in the terminal** (always available, and the only way to approve more than was requested):
 
     python -m agency.cli --client acme approve SAR-0001
     python -m agency.cli --client acme approve SAR-0001 --amount 150000 --daily-cap 6000    # modify
     python -m agency.cli --client acme reject  SAR-0001 --note "reason"
 
-**4. Check the budget position at any time:**
+**5. Check the budget position at any time:**
 
     python -m agency.cli --client acme ledger
 
-**5. Ask for a report.** Ask the CEO in plain language; the Ad Hoc Reporting Analyst answers from the warehouse with a saved, rerunnable query. Until a live connector exists, the warehouse holds only synthetic data or extracts you provide.
+**6. Ask for a report.** Ask the CEO in plain language; the Ad Hoc Reporting Analyst answers from the warehouse with a saved, rerunnable query. Until a live connector exists, the warehouse holds only synthetic data or extracts you provide.
 
-**6. Stop everything.** Tell the CEO to stop. Pauses never need approval.
+**7. Stop everything.** Tell the CEO to stop. Pauses never need approval.
